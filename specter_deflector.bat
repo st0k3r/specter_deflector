@@ -1,0 +1,1 @@
+start "" code "C:\Pico-8\carts\Specter_Deflector"
