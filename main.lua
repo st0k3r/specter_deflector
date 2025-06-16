@@ -1010,7 +1010,7 @@ function start_game()
 	music(-1)
 	music(6)
 	--sets wave number
-	wave=0
+	wave=1
 	--sets game timer
 	timer_frames=0
 	timer_seconds=0
@@ -1610,7 +1610,7 @@ function creature_do(creature)
 			else
 				--since frank has not fired, he attacks by moving towards and pursuing ghost
 				ang=atan2(ghost.y-creature.y,ghost.x-creature.x)
-				--if frank is below a certain point, he moves directly down
+				--if frank is below ghost, he moves directly down
 				if creature.y>ghost.y then
 					creature.sy=1
 					creature.sx=0
@@ -1943,14 +1943,14 @@ function fire(creature,ang,spd)
 	creature.has_fired=true	
 	elseif creature.type==2 then
 		--witch
-		potion_sprites={40,132,148}
-		creature_bullet.spr=rnd(potion_sprites)
-		--sprite is set to random sprite from potion_sprites list
-		if creature_bullet.spr==148 and ghost_mode_timer<=0 then
-		--spr 148 saps ghost mode energy, so re-roll if ghost mode is already depleted
+		if ghost_mode_timer>0 then
+		--spr(148) potion saps ghost mode energy, so it should only be available if ghost mode is not already depleted
+			potion_sprites={40,132,148}
+		else 
 			potion_sprites={40,132}
-			creature_bullet.spr=rnd(potion_sprites)
 		end
+		--sprite is set to random sprite from potion_sprites list
+		creature_bullet.spr=rnd(potion_sprites)
 		--adjust animation based on sprite:
 		if creature_bullet.spr==132 then
 			creature_bullet.animation={132,133,134}
