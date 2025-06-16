@@ -1611,7 +1611,7 @@ function creature_do(creature)
 				--since frank has not fired, he attacks by moving towards and pursuing ghost
 				ang=atan2(ghost.y-creature.y,ghost.x-creature.x)
 				--if frank is below a certain point, he moves directly down
-				if creature.y>100 then
+				if creature.y>ghost.y then
 					creature.sy=1
 					creature.sx=0
 				else
