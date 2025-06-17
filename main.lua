@@ -8,8 +8,7 @@ function _init()
 	
 	start_screen()
 	
-	--[[ create blinkt for use in
-	blink() ]]--
+	--create blinkt for use in blink()
 	blinkt=0
 	
 	--frames
@@ -18,9 +17,7 @@ function _init()
 	--plays start screen music
 	music(0)
 	
-	--[[ used to animate
-	background assets on start
-	screen ]]--
+	--used to animate background assets on start screen
 	set_transparency()
 	grave_sprites={10,11,12}
 	grave_types={}
@@ -30,8 +27,7 @@ function _init()
 	--button lockout
 	lockout=0
 	
-	--[[ variable for controlling
-	screen shake ]]--
+	--variable for controlling screen shake
 	shake=0
 	
 	--power-ups for ghost 
@@ -43,8 +39,7 @@ end
 
 --gameplay
 function _update()
-	--[[ increments blink() array
-	 in blink() ]]--
+	--increments blink() array in blink()
 	blinkt=blinkt+1
 	
 	--keeps track of frames
@@ -85,8 +80,7 @@ end
 
 --update functions
 
---[[ game state - called when
-mode is set to  "game" ]]--
+--game state - called when mode is set to  "game"
 function update_game()
 	set_ghost_params()
 	controls()
@@ -105,8 +99,7 @@ function update_game()
 	picking()
 	animate_background()
 	
-	--[[ keeps track of seconds
-	and minutes for game timer ]]--
+	--keeps track of seconds and minutes for game timer
 	timer_frames+=1
 	if timer_frames==30 then
 		timer_seconds+=1
@@ -117,16 +110,13 @@ function update_game()
 			end
 	end
 
-	--[[ checks if all creatures	
-	are eliminated and starts
-	next wave if so ]]--
+	--checks if all creatures are eliminated and starts next wave if so
 	if mode=="game" and #creatures==0 then
 		next_wave()
 	end
 end
 
---[[ start state - called when 
-mode is set to "start" ]]--
+--start state - called when mode is set to "start"
 function update_start()
 	--button lockout
 	if btnp(5)==false and btnp(4)==false then
@@ -142,8 +132,7 @@ function update_start()
 	animate_background()
 end
 
---[[ over state - called when
-mode is set to "over" ]]--
+--over state - called when mode is set to "over"
 function update_over()
 	--button lockout
 	if t<lockout then
@@ -163,8 +152,7 @@ function update_over()
 	end
 end
 
---[[ updates wave text at
-beginning of each wave and starts next wave]]--
+--updates wave text at beginning of each wave and starts next wave
 function update_wavetext()
 	update_game()
 	wavetime-=1
@@ -174,8 +162,7 @@ function update_wavetext()
 	end
 end
 
---[[ win state - called when
-mode is set to "win" ]]--
+--win state - called when mode is set to "win"
 function update_win()
 	--button lockout
 	if t<lockout then
@@ -199,20 +186,18 @@ function set_ghost_params()
 	ghost.xspeed=0
 	ghost.yspeed=0
 	
-	--sets ghost mode sprite
 	if ghost.mode==1 then
+	--sets ghost mode sprite
 		ghost.spr=31
 	else
-		--sets regular ghost sprite
+	--sets regular ghost sprite
 		ghost.spr=2
 	end
 	ghost.mode=0
 	ghost.bomb=false
 end
 
---[[ controls setup - adjusts
-sprite and speed based on
-button input ]]--
+--controls setup - adjusts sprite and speed based on button input
 --btn(4) = z
 --btn(5) = x
 --btn(0) = left
@@ -221,18 +206,18 @@ button input ]]--
 --btn(3) - down
 function controls()
 	if btn(4) then
-		--ghost mode
+	--ghost mode
 		--ghost mode cannot be used during periods of invulnerability ex. after being hit
 		if invul<=0 then
-			--ghost mode cannot be used if ghost mode is depleted
+			--ghost mode cannot be used if ghost mode timer is depleted
 			if ghost_mode_timer>0 then
 				--ghost mode cannot be used during wave text
 				if wavetime<=0 then
 					ghost.mode=1
 	 				ghost_mode_timer-=1
 				end
-				--play sfx if ghost mode is depleted to 0
 	 			if ghost_mode_timer==0 then
+				--play sfx if ghost mode is depleted to 0
 	 				sfx(9)
 	 			end
 	 			sfx_check+=1
@@ -241,24 +226,24 @@ function controls()
 		end
  	end
  	if btn(4) and btnp(5) then
-		--bomb
+	--bomb
 		--ghost bomb can only be used if there is at least one bomb in bombs
 		if bombs>0 then
 			--ghost bomb cannot be used during periods of invulnerability ex. after being hit
 			if invul<=0 then
-				--ghost bomb can only be used during ghost mode
+				--ghost bomb can only be used during ghost mode, which requires ghost mode timer to be greater than 0
 				if ghost_mode_timer>0 then
 					--ghost bomb cannot be used during wave text
 					if wavetime<=0 then	
 						--number of projectiles fired is based on number of bombs (candy)
 						ghost_bomb(bombs)
 						bombs=0	
-						--using ghost bomb depletes ghost mode
+						--using ghost bomb depletes ghost mode to 0
 						ghost_mode_timer=0			
 					end
 				end
 			end
-		--when no bombs (candy) are available, show message:
+		--when no bombs (candy) are available:
 		else
 			--no message shown during invulnerability ex. after being hit
 			if invul<=0 then
@@ -282,7 +267,7 @@ function controls()
 		end
 	end
  	if btn(5) then
- 		--shoot
+ 	--shoot
 		--cannot shoot bullets during ghost mode
  		if bullet_timer <=0 and ghost.mode!=1 then
 	 		local new_bullet=makespr()
@@ -302,17 +287,17 @@ function controls()
 		end
  	end
 	if btn(0) then
-		--horizontal move left and change sprite and speed based on ghost mode status
+	--horizontal move left and change sprite and speed based on ghost mode status
 		ghost.xspeed=-2
 		if ghost.mode==1 then
-	 	ghost.spr=30
-	 	ghost.xspeed*=2
+	 		ghost.spr=30
+	 		ghost.xspeed*=2
 	 	else
 	 		ghost.spr=1
 	 	end
 	end
 	if btn(1) then
-		--horizontal move right and change sprite and speed based on ghost mode status
+	--horizontal move right and change sprite and speed based on ghost mode status
 		ghost.xspeed=2
 		if ghost.mode==1 then
 			ghost.spr=32
@@ -322,7 +307,7 @@ function controls()
 		end
 	end
 	if btn(2) then
-		--vertical move up and change sprite and speed based on ghost mode status
+	--vertical move up and change sprite and speed based on ghost mode status
 		ghost.yspeed=-2
 		if ghost.mode==1 then
 			ghost.spr=33
@@ -332,7 +317,7 @@ function controls()
 		end
  	end
  	if btn(3) then
- 		--vertical move down and change sprite and speed based on ghost mode status
+ 	--vertical move down and change sprite and speed based on ghost mode status
  		ghost.yspeed=2
  		if ghost.mode==1 then
  			ghost.spr=34
@@ -345,7 +330,7 @@ function controls()
 	bullet_timer=bullet_timer-1
 end
 
---ghost mode sound effect maintainer
+--ghost mode sfx maintainer
 function sfxcheck()
 	if sfx_check==1 then
 		if wavetime<=0 then
@@ -354,9 +339,7 @@ function sfxcheck()
 	end
 end
 
---[[ checks if z button is 
-pressed/held for ghost mode 
-sfx ]]--
+--checks if z button is pressed/held for ghost mode sfx
 function z_check()
 	local is_down=btn(4)
 	
@@ -377,11 +360,9 @@ function ghost_movement()
 	ghost.y=ghost.y+ghost.yspeed
 end
 
---[[ controls bullet direction
-and deletes them when off
-screen --]]
+--controls bullet direction and deletes them when off screen
 function bullet_movement()
-	--ghost bullets
+--ghost bullets
 	for bullet in all(bullets) do
 		move(bullet)
 		if bullet.y<-8 do
@@ -408,12 +389,11 @@ function move_pickups()
 		
 		if pickup.y>128 then
 			del(pickups,pickup)
-		end	
+		end
 	end
 end
 
---[[ handles movement of enemy
-creatures ]]--
+--handles movement of creatures
 function creature_movement()
 	for creature in all(creatures) do
 		creature_do(creature)
@@ -430,8 +410,7 @@ function creature_movement()
 	end
 end
 
---[[ checks for collision
-with bullet and creature and deletes bullet at time of collision ]]--
+--checks for collision with bullet and creature and deletes bullet at time of collision
 function collision_bullet()
 	for creature in all(creatures) do
 		for bullet in all(bullets) do
@@ -440,13 +419,13 @@ function collision_bullet()
 				--circle wave animation at site of collision
 				make_small_wave(bullet.x+4,bullet.y+4)
 				--slime spatter animation
-				make_blood(creature.x+4,creature.y+4)
+				make_slime(creature.x+4,creature.y+4)
 				--decrements creature health
 				creature.hp=creature.hp-bullet.dmg
 				sfx(3)
 				--show flash animation
-				--flash duration is longer for boss creatures
 				if creature.boss==true then
+				--flash duration is longer for boss creatures
 					creature.flash=5
 				else
 					creature.flash=2
@@ -460,13 +439,12 @@ function collision_bullet()
 					end
 				end
 				
-				--[[ other creatures slime
-				spatter effect ]]--
+				--other creatures slime spatter effect
 				if creature.hp<3 then
 					if creature.type==1 then
 					--frank
 						if creature.has_fired==true then
-							--headless frank effect
+						--headless frank effect
 							creature.spr=49
 							creature.animation={49,49,50,50}
 						else
@@ -484,8 +462,7 @@ function collision_bullet()
 					end
 				end
 				
-				--[[ bat slime spatter
-				effect ]]--
+				--bat slime spatter effect
 				if creature.type==3 and creature.mission=="attack" and creature.hp<3 then
 					creature.animation={37,38,39}
 				end
@@ -499,11 +476,9 @@ function collision_bullet()
 	end
 end
 
---[[ checks for collision with
-ghost and creature ]]--
+--checks for collision with ghost and creature
 function collision_ghost()
-	--[[ collision disabled 
-	during invulnerability caused by being hit or during ghost mode ]]--
+	--collision disabled during invulnerability caused by being hit or during ghost mode
 	if invul<=0 then
 		if ghost.mode!=1 then
 			for creature in all(creatures) do
@@ -521,39 +496,37 @@ function collision_ghost()
 				end	
 			end
 		end
-		else
-			--deplete invulnerability timer
-			invul=invul-1
-		end
+	else
+	--deplete invulnerability timer
+		invul=invul-1
+	end
 end
 
---[[ checks for collision with
-ghost and creature bullet ]]--
+--checks for collision with ghost and creature bullet
 function collision_creature_bullet()
 	if invul<=0 then
 		if ghost.mode!=1 then
-			--[[ collision disabled 
-			during ghost mode ]]--
+			--collision disabled during ghost mode
 			for creature_bullet in all(creature_bullets) do
 				if collision(creature_bullet,ghost) then
 					if creature_bullet.spr==46 or creature_bullet.spr==51 then
-						--frank head
+					--frank head
 						--frank head collision causes 2 damage
 						lives=lives-2
 						show_float("headshot!",creature_bullet.x,creature_bullet.y)
 					elseif creature_bullet.spr>=40 and creature_bullet.spr<=42 then
-					--witch poision
-						--purple poison causes 1 damage and reduces max lives by 1
+					--witch potion
+						--purple potion causes 1 damage and reduces max lives by 1
 						lives-=1
 						max_lives-=1
 						show_float("poisoned",creature_bullet.x,creature_bullet.y)
 					elseif creature_bullet.spr>=132 and creature_bullet.spr<=134 then
-						--orange poison causes 1 damage and removes all bombs (candy)
+						--orange potion causes 1 damage and removes all bombs (candy)
 						lives-=1
 						bombs=0
 						show_float("tricked!",creature_bullet.x,creature_bullet.y)
 					elseif creature_bullet.spr>=148 and creature_bullet.spr<=150 then
-						--blue poison causes 1 damage and depletes ghost mode
+						--blue potion causes 1 damage and depletes ghost mode
 						lives-=1
 						ghost_mode_timer=0
 						show_float("sapped!",creature_bullet.x,creature_bullet.y)
@@ -587,9 +560,7 @@ function collision_pickups()
 	end
 end
 
---[[ checks if lives has
-depleted to 0, and changes
-mode if so ]]--
+--checks if lives has depleted to 0, and changes mode if so
 function lives_check()
 	if lives<=0 then
 		mode="over"
@@ -601,23 +572,18 @@ function lives_check()
 	end
 end
 
---[[ decreases size of muzzle
-flash animation ]]--
+--decreases size of muzzle flash animation
 function dec_flash()
 	if muzzle>0 then
 		muzzle=muzzle-1
 	end
 end
 
---[[ checks if ghost has
-reached edge and stops
-further movement ]]--
+--checks if ghost has reached edge and stops further movement
 function edge_checking()
 	if ghost.x>120 then
 		if ghost.mode==1 then
-			--[[ ghost can move through
-			side walls during ghost
-			mode ]]--
+			--ghost can move through side walls during ghost mode
 			ghost.x=0
 		else
 			ghost.x=120
@@ -631,12 +597,10 @@ function edge_checking()
 		end
 	end
 	if ghost.y>120 then
-			ghost.y=120
+		ghost.y=120
 	end
 	if ghost.y<0 then
-		if ghost.mode==1 then
-			ghost.y=0
-		end
+		ghost.y=0
 	end	
 end
 
@@ -670,7 +634,7 @@ function makespr()
  	return sprite
 end
 
---[[ function for screen shake ]]--
+--function for screen shake
 function do_shake()
 	local shake_x=rnd(shake)-(shake/2)
 	local shake_y=rnd(shake)-(shake/2)
@@ -689,8 +653,7 @@ end
 
 --draw functions
 
---[[ draws game - called when 
-mode is set to "game" ]]--
+--draws game - called when mode is set to "game"
 function draw_game()
 	cls(3)
 	draw_graveyard()
@@ -709,9 +672,7 @@ function draw_game()
 	draw_ghost_mode()
 end
 
---[[ draws start screen
- - called when mode is set to 
-"start" ]]--
+--draws start screen - called when mode is set to "start"
 function draw_start()
 	cls(3)
 	draw_graveyard()
@@ -719,12 +680,11 @@ function draw_start()
 	center_print("press ❎ to start",64,80,blink())
 end
 
---[[ draws game over screen
- - called when mode is set to 
-"over" ]]--
+--draws game over screen - called when mode is set to "over"
 function draw_over()
 	draw_game()
 	center_print("r.i.p.",64,40,8)
+	--timer formatting logic
 	if timer_seconds<10 then
 		center_print(timer_minutes..":0"..timer_seconds,64,49,blink())
 	else
@@ -747,8 +707,7 @@ function draw_win()
 	center_print("press ❎ to continue",64,80,blink())
 end
 
---[[ draws wave text shown at
-beginning of each eave ]]--
+--draws wave text shown at beginning of each wave
 function draw_wavetext()
 	draw_game()
 	center_print("wave "..wave,64,40,blink())
@@ -767,7 +726,7 @@ function draw_graveyard()
 	end
 end
 
---draws floating text messages and deletes after timeout period
+--draws floating text messages and deletes them after timeout period
 function draw_floats()
 	for float in all(floats) do
 		local col=7
@@ -790,7 +749,7 @@ function draw_ghost()
 		if invul<=0 then
 			draw_spr(ghost)
 		else
-			--flashing effect during invulnerability, etc.
+		--flashing effect during invulnerability, etc.
 			if sin(t/5)<0.1 then
 				draw_spr(ghost)
 			end
@@ -825,7 +784,7 @@ function draw_creature()
 				pal(9,14)
 			end
 			
-			--boss creature sprite changes when hit
+			--boss creature sprite changes when hit and flashes
 			if creature.boss==true then
 				creature.spr=200
 				creature.flash-=1
@@ -857,9 +816,7 @@ function muzzle_flash()
 	end
 end
 
---[[ draws shockwaves when
-creatures explode or are hit
-by bullets and deletes shockwaves once they hit a certain size ]]--
+--draws shockwaves when creatures explode or are hit by bullets and deletes shockwaves once they hit a certain size
 function shockwave()
 	for shockwave in all(shockwaves) do
 		circ(shockwave.x,shockwave.y,shockwave.size,shockwave.col)
@@ -870,26 +827,25 @@ function shockwave()
 	end
 end
 
---[[ used to draw explosions
-upon creature death ]]--
+--used to draw explosions upon creature death
 function draw_explosions()
 	for explosion in all(explosions) do
-		--explosion color is initially white
+	--explosion color is initially white
 		local pc=7
 		
 		if explosion.green then
-			--explosion color is green, used when ghost is hit
+		--explosion color is green, used when ghost is hit
 			pc=11
 		else
-			--explosion color uses variety of colors based on age, used when creatures are hit
+		--explosion color uses variety of colors based on age, used when creatures are killed
 			pc=particle_age_red(explosion.age)
 		end
 		
-		--spark effect used when creature is hit
 		if explosion.spark then
+		--spark effect used when creature is hit
 			pset(explosion.x,explosion.y,11)
-		--explosion effect used when creature is killed
 		else
+		--explosion effect used when creature is killed
 			circfill(explosion.x,explosion.y,explosion.size,pc)
 		end
 		
@@ -910,8 +866,7 @@ function draw_explosions()
 	end
 end
 
---[[ draws bullets fired by
-creatures ]]--
+--draws bullets fired by creatures
 function draw_creature_bullets()
 	for creature_bullet in all(creature_bullets) do
 		draw_spr(creature_bullet)
@@ -1002,15 +957,14 @@ end
 
 --called to start gameplay
 function start_game()
-	--[[calls function to adjust
- default transparency ]]--
+	--calls function to adjust default transparency
 	set_transparency()
 	
 	--kill existing music and play game music
 	music(-1)
 	music(6)
 	--sets wave number
-	wave=1
+	wave=0
 	--sets game timer
 	timer_frames=0
 	timer_seconds=0
@@ -1019,8 +973,7 @@ function start_game()
 	--begins wave 1
 	next_wave()
 	
-	--[[ ghost player character
-	(pc) object ]]--	
+	--ghost player character (pc) object	
 	ghost=makespr()
 	ghost.spr=2
 	ghost.x=64
@@ -1042,7 +995,7 @@ function start_game()
 	--bombs (candy)
  	bombs=0
 	
-	--randomizes bomb sprite for UI
+	--randomizes bomb (candy) sprite for UI
  	bombs_sprites={52,53,54}
  	bombs_sprite=rnd(bombs_sprites)
  
@@ -1050,19 +1003,16 @@ function start_game()
  	freq=60
  	next_fire=0
  
- 	--[[ helper var for 
- 	invulnerability of ghost 
- 	pc ]]--
+ 	--helper var for invulnerability of ghost pc
  	invul=0
  
- 	--[[ background sprites
- 	list and functions ]]--
+ 	--background sprites list and functions
  	grave_sprites={10,11,12}
  	grave_types={}
  	sprtable=randpos()
  	graveyard_gen()
  
- 	--[[ bullets object ]]--
+ 	--bullets object
  	bullets={}
  	creature_bullets={}
  
@@ -1085,16 +1035,13 @@ function start_game()
  	floater_timeout=60
 end
 
---[[ removes transparency from
-black(0) and adds to pink(14)
-instead ]]--
+--removes transparency from black(0) and adds to pink(14) instead
 function set_transparency()
 	palt(0, false)
 	palt(14, true)
 end
 
---[[ generates random positions
-for background graves ]]--
+--generates random positions for background graves
 function randpos()
   local ids={}
   for i=0,8*8 do
@@ -1118,16 +1065,14 @@ function randpos()
   return result
 end
 
---[[ selects random grave
-sprites to appear ]]--
+--selects random grave sprites to appear
 function graveyard_gen()
 	for i=1,#sprtable do
 		grave_types[i]=rnd(grave_sprites)
 	end
 end
 
---[[ makes start/over screen
-text blink red ]]--
+--makes start/over screen text blink red
 function blink()
 	local anim={0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8}
 	if blinkt>#anim then
@@ -1144,8 +1089,7 @@ function draw_outline(sp)
 	spr(sp.spr,sp.x,sp.y-1,sp.width,sp.height)
 end
 
---[[ function to draw all 
-sprite objects ]]--
+--function to draw all  sprite objects
 function draw_spr(sp)
 	local sprx=sp.x
 	local spry=sp.y
@@ -1198,8 +1142,7 @@ function collision(a,b)
 	return true
 end
 
---[[ creates creature obj and
-and adds it to list ]]--
+--creates creature obj and and adds it to list
 function spawn_creature(creature_type,x,y,wait)
 	--creature defaults
 	local creature=makespr()
@@ -1272,11 +1215,10 @@ function spawn_creature(creature_type,x,y,wait)
 	 	creature.boss=true
  	end
  
- add(creatures, creature)
+ 	add(creatures, creature)
 end
 
---[[ creates particle obj and
-adds it to list ]]--
+--creates particle obj and adds it to list
 function spawn_explosion(exp_x,exp_y,isgreen)
 	local explosion={}
 	explosion.x=exp_x
@@ -1305,8 +1247,7 @@ function spawn_explosion(exp_x,exp_y,isgreen)
 	end
 end
 
---[[ function to change color of
-particle based on age ]]--
+--function to change color of particle based on age
 function particle_age_red(particle_age)
 	local col=7
 	
@@ -1326,9 +1267,7 @@ function particle_age_red(particle_age)
 	return col
 end
 
---[[ function to create 
-shockwave upon bullet/enemy 
-collision ]]--
+--function to create shockwave upon bullet/enemy collision
 function make_small_wave(wave_x,wave_y,wave_col)
 	if wave_col==nil then
 		wave_col=11
@@ -1343,9 +1282,7 @@ function make_small_wave(wave_x,wave_y,wave_col)
 	add(shockwaves,shockwave)
 end
 
---[[ function to create 
-shockwave upon enemy explosion
-]]--
+--function to create shockwave upon enemy explosion
 function make_big_wave(wave_x,wave_y)
 	local shockwave={}
 	shockwave.x=wave_x
@@ -1357,10 +1294,8 @@ function make_big_wave(wave_x,wave_y)
 	add(shockwaves,shockwave)
 end
 
---[[ makes bullet collision
-particle effect for
-creatures ]]--
-function make_blood(hit_x,hit_y)
+--makes bullet collision particle effect for creatures
+function make_slime(hit_x,hit_y)
 	local explosion={}
 	explosion.x=hit_x
 	explosion.y=hit_y
@@ -1409,13 +1344,12 @@ end
 
 --waves and enemies
 
---[[ spawns waves and according
-to creature type ]]--
---1 = Frank
---2 = Witch
---3 = Drac
---4 = UFO
---5 = Boss
+--spawns waves and according to creature type
+--1 = frank
+--2 = witch
+--3 = drac
+--4 = ufo
+--5 = jack (boss)
 function spawn_wave()
 	if wave==1 then
 		freq=60
@@ -1509,7 +1443,7 @@ function spawn_wave()
 	end
 end
 
---[[ handles creature placement ]]--
+--handles creature placement
 function place_creatures(lvl)
 	for y=1,4 do
 		local y_line=lvl[y]
@@ -1522,8 +1456,7 @@ function place_creatures(lvl)
 	end
 end
 
---[[ increments wave and checks
-if game has completed ]]--
+--increments wave and checks if game has completed
 function next_wave()
 	wave+=1
 	sfx_check=0
@@ -1550,8 +1483,7 @@ end
 
 --behaviors
 
---[[ defines what creatures will
-be doing based on mission ]]--
+--defines what creatures will be doing based on mission
 function creature_do(creature)
 	if creature.wait>0 then
 		creature.wait-=1
@@ -1600,7 +1532,7 @@ function creature_do(creature)
 	elseif creature.mission=="boss_5" then
 	
 	elseif creature.mission=="attack" then
-	--attacking ghost
+	--attacking ghost by flying down
 		if creature.type==1 then
 			--frank
 			creature.sy=1
@@ -1608,7 +1540,7 @@ function creature_do(creature)
 				--since frank has fired, he attacks by moving left and right and directly down
 				creature.sx=sin(t/45)
 			else
-				--since frank has not fired, he attacks by moving towards and pursuing ghost
+			--since frank has not fired, he attacks by moving towards and pursuing ghost
 				ang=atan2(ghost.y-creature.y,ghost.x-creature.x)
 				--if frank is below ghost, he moves directly down
 				if creature.y>ghost.y then
@@ -1645,24 +1577,24 @@ function creature_do(creature)
 				creature.sx-=(creature.x-88)/32
 			end
 		elseif creature.type==3 then
-			--vampire
+		--drac
 			if creature.sx==0 then
-				--flying down
+			--flying down
 				creature.sy=2
 				if ghost.y<=creature.y then
 					--stops moving down once ghost and vampire y values are equal
 					creature.sy=0
 					if ghost.x<creature.x then
-						--if ghost is to the left of vampire, vampire moves left
+					--if ghost is to the left of vampire, vampire moves left
 						creature.sx=-2
 					else
-						--if ghost is to the right of vampire, vampire moves right
+					--if ghost is to the right of vampire, vampire moves right
 						creature.sx=2
 					end
 				end
 		end			
 		elseif creature.type==4 then
-			--ufo
+		--ufo
 			--speed changes based on y position
 			creature.sy=0.3
 			if creature.y>110 then
@@ -1678,8 +1610,7 @@ function creature_do(creature)
 	end
 end
 
---[[ picks creature from 
-list and sets it to attack ]]--
+--picks creature from list and sets it to attack
 function picking()
 	if mode!="game" then
 		return
@@ -1695,8 +1626,7 @@ function picking()
 	end
 end
 
---[[ picks a creature to fly
-down and attack ghost ]]--
+--picks a creature to fly down and attack ghost
 function pick_attack()
 	local maxnum=min(10, #creatures)
 	local index=flr(rnd(maxnum))
@@ -1709,9 +1639,7 @@ function pick_attack()
 	if creature.mission=="hover" then
 		creature.mission="attack"
 			
-		--[[ adjusts creature sprites
-		and animations based on
-		attack mission ]]--
+		--adjusts drac sprite animation based on hp 
 		if creature.type==3 then
 			creature.anispeed=0.5
 			if creature.hp>=3 then
@@ -1726,14 +1654,14 @@ function pick_attack()
 	end
 end
 
---[[ picks a creature to shoot
-at ghost ]]--
+--picks a creature to shoot at ghost
 function pick_fire()
 	local maxnum=min(10, #creatures)
 	local index=flr(rnd(maxnum))
 	local index=#creatures-index
 	
 	for creature in all (creatures) do
+	--spreadshot if creature is a ufo
 		if creature.type==4 and creature.mission=="hover" then
 			if rnd()<0.5 then
 				spreadshot(creature,12,1.3,rnd())
@@ -1744,24 +1672,27 @@ function pick_fire()
 	
 	local creature=creatures[index]
 	
+	--drac does not fire a projectile
 	if creature==nil or creature.type==3 then return end
 		
 	if creature.mission=="hover" then
 		if creature.type==4 then
-			--ufo
+		--ufo
 			spreadshot(creature,12,1.3,rnd())
 		elseif creature.type==5 then
-			--jack (boss)
+		--jack (boss)
 			fire(creature,0,2)
 		elseif creature.type==2 then
-			--witch
+		--witch
+			--witches fire a projectile at ghost - if ghost is not in ghost mode fire aimed projectile
 			if ghost.mode!=1 then
 				aimedfire(creature,2)
 			else
 				fire(creature,0,2)
 			end
 		elseif creature.type==1 then
-			--frank
+		--frank
+			--frank fires a projectile at ghost - if frank has not fired yet, his sprite and animation will be updated based on hp 
 			if creature.has_fired==false then
 				if creature.hp>=3 then
 					creature.spr=47
@@ -1782,8 +1713,7 @@ function move(obj)
 	obj.y+=obj.sy
 end
 
---[[ called when creature hp
-is equal to or less than 0 ]]--
+--called when creature hp is equal to or less than 0
 function kill_creature(creature)
 	del(creatures,creature)
 	sfx(2)
@@ -1794,7 +1724,7 @@ function kill_creature(creature)
 	local pickup_chance=0.1
 	
 	if creature.mission=="attack" then
-		--if creature was attacking, it has a higher chance to drop pickup
+	--if creature was attacking, it has a higher chance to drop pickup
 		if rnd()<0.5 then
 			pick_attack()
 		end
@@ -1824,29 +1754,28 @@ function pickup_logic(pickup)
 	--make small wave where pickup was collected
 	make_small_wave(pickup.x+4,pickup.y+4,14)
 
-
-	if bombs>=10 then
 	--if player collects 11 bombs (candies):
+	if bombs>=10 then
+	--if the players lives are less than max lives:
 		if lives<max_lives then
-		--if the players lives are less than max lives:
+		--bombs reset to 0
 			bombs=0
-			--bombs reset to 0
-			lives+=1
 			--lives increase by 1
+			lives+=1
 			sfx(12)
 			show_float("ghoulish!",pickup.x+4,pickup.y+4)
-		else
 		--if the players lives are equal to max lives:
-			--if ghost mode is already max:
+		else
+		--if ghost mode is less than max:
 			if ghost_mode_timer<90 then
-				bombs=0
 				--bombs reset to 0
-				ghost_mode_timer=90
+				bombs=0
 				--ghost mode timer resets to max
+				ghost_mode_timer=90
 				show_float("energy restored!",pickup.x+4,pickup.y+4)
 				sfx(15)
-			else
 			--if both lives and ghost mode are max:
+			else
 				sfx(11)
 				show_float("2x score multiplier!",pickup.x+4,pickup.y+4)	
 			end
@@ -1855,8 +1784,8 @@ function pickup_logic(pickup)
 	elseif bombs>=5 then
 		--if ghost mode timer is less than half:
 		if	ghost_mode_timer<45 then
+		--ghost mode timer increased to half
 			ghost_mode_timer=45
-			--ghost mode timer increased to half
 			show_float("energy restored!",pickup.x+4,pickup.y+4)
 			sfx(15)
 		else
@@ -1869,10 +1798,7 @@ function pickup_logic(pickup)
 	end
 end
 
---[[ animation function - code
-was originally written for 
-creatures, but has been
-repurposed for all sprites ]]--
+-- animation function - code was originally written for creatures, but has been repurposed for all sprites
 function animate(creature)
 	creature.frame+=creature.anispeed
 	
@@ -1885,16 +1811,14 @@ end
 
 --bullets
 
---[[ called when creature 
-mission is "fire" - shoots
-bullet at ghost ]]--
+--called when creature  mission is "fire" - shoots projectile at ghost
 function fire(creature,ang,spd)
 	sfx(10)
 	local creature_bullet=makespr()
 	creature_bullet.x=creature.x-1
 	creature_bullet.y=creature.y
 	
-	--adjust spawn location of fired creature bullets
+	--adjust spawn location of fired creature bullets for ufo and boss
 	if creature.type==4 then
 		creature_bullet.x=creature.x+4
 		creature_bullet.y=creature.y+12
@@ -1912,25 +1836,25 @@ function fire(creature,ang,spd)
 	elseif creature.type==1 then
 	--frank
 		creature_bullet.anispeed=1
-		if creature.has_fired==false then
 		--frank has not fired yet
+		if creature.has_fired==false then
+		--frank has taken damage
 			if creature.hp<3 then
-			--frank has taken damage
+			--sprite is set to slimed frank head
 				creature_bullet.spr=51
-				--sprite is set to slimed frank head
 				creature_bullet.animation={51,51}
-			else
 			--frank has not taken damage
+			else
+			--sprite is set to normal frank head
 				creature_bullet.spr=46
-				--sprite is set to normal frank head
 				creature_bullet.animation={46,46}
 			end
-		else
 		--frank has fired
+		else
+		--sprite is set to random sprite from frank_bullets list
 			frank_bullets={55,56,60}
 			creature_bullet.spr=rnd(frank_bullets)
-			--sprite is set to random sprite from frank_bullets list
-			--adjust animation based on sprite:
+			--adjust animation based on sprite
 			if creature_bullet.spr==55 then
 				creature_bullet.animation={55,55}
 			elseif creature_bullet.spr==56 then
@@ -1942,16 +1866,16 @@ function fire(creature,ang,spd)
 	--frank can only throw head once
 	creature.has_fired=true	
 	elseif creature.type==2 then
-		--witch
+	--witch
+	--blue potion (spr148) potion saps ghost mode energy, so it should only be available if ghost mode is not already depleted
 		if ghost_mode_timer>0 then
-		--spr(148) potion saps ghost mode energy, so it should only be available if ghost mode is not already depleted
 			potion_sprites={40,132,148}
 		else 
 			potion_sprites={40,132}
 		end
 		--sprite is set to random sprite from potion_sprites list
 		creature_bullet.spr=rnd(potion_sprites)
-		--adjust animation based on sprite:
+		--adjust animation based on sprite
 		if creature_bullet.spr==132 then
 			creature_bullet.animation={132,133,134}
 		elseif creature_bullet.spr==148 then
@@ -1961,7 +1885,7 @@ function fire(creature,ang,spd)
 		end
 		creature_bullet.anispeed=0.1
 	else
-		--jack (boss)
+	--jack (boss)
 		creature_bullet.spr=9
 		creature_bullet.animation={9,9}
 		creature_bullet.anispeed=0.1
@@ -1995,8 +1919,7 @@ function spreadshot(creature,num,spd,base)
 	end
 end
 
---[[ witches projectile -
-targeted at player ]]--
+--witches projectile - targeted at ghost
 function aimedfire(creature,spd)
 	local creature_bullet=fire(creature,0,spd)
 	
@@ -2006,8 +1929,7 @@ function aimedfire(creature,spd)
 	creature_bullet.sx=sin(ang)*spd
 end
 
---[[ function to move creature
-toward ghost ]]--
+--function to move creature toward ghost
 function move_ang(creature,ang,spd)
 	creature.sy=cos(ang)*spd
 	creature.sx=sin(ang)*spd
