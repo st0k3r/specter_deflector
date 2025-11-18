@@ -15,7 +15,7 @@ function _init()
 	t=0
 	
 	--plays start screen music
-	music(8)
+	music(0)
 	
 	--used to animate background assets on start screen
 	set_transparency()
@@ -146,7 +146,7 @@ function update_over()
 	if btn_released==true then
 		if btnp(4) or btnp(5) then
 			start_screen()
-			music(8)
+			music(0)
 			btn_released=false
 		end
 	end
@@ -567,7 +567,7 @@ function lives_check()
 		lockout=t+30
 		--kills sfx and plays "over" mode music
 		sfx(-1)
-		sfx(5)
+		music(7)
 		return
 	end
 end
@@ -962,7 +962,7 @@ function start_game()
 	
 	--kill existing music and play game music
 	music(-1)
-	sfx(4)
+	music(6)
 	--sets wave number
 	wave=0
 	--sets game timer
@@ -1465,7 +1465,7 @@ function next_wave()
 	if wave>11 then
 		mode="win"
 		lockout=t+30
-		music(8)
+		music(0)
 	else
 		mode="wavetext"
 		--slight adjustment to wavetime for wave 1 to account for sfx
