@@ -1756,10 +1756,9 @@ function pickup_logic(pickup)
 
 	--if player collects 11 bombs (candies):
 	if bombs>=10 then
-	--if the players lives are less than max lives:
+		bombs=0
+		--if the players lives are less than max lives:
 		if lives<max_lives then
-		--bombs reset to 0
-			bombs=0
 			--lives increase by 1
 			lives+=1
 			sfx(12)
@@ -1768,8 +1767,6 @@ function pickup_logic(pickup)
 		else
 		--if ghost mode is less than max:
 			if ghost_mode_timer<90 then
-				--bombs reset to 0
-				bombs=0
 				--ghost mode timer resets to max
 				ghost_mode_timer=90
 				show_float("energy restored!",pickup.x+4,pickup.y+4)
