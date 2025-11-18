@@ -15,7 +15,7 @@ function _init()
 	t=0
 	
 	--plays start screen music
-	music(0)
+	music(8)
 	
 	--used to animate background assets on start screen
 	set_transparency()
@@ -146,7 +146,7 @@ function update_over()
 	if btn_released==true then
 		if btnp(4) or btnp(5) then
 			start_screen()
-			music(0)
+			music(8)
 			btn_released=false
 		end
 	end
@@ -1465,7 +1465,7 @@ function next_wave()
 	if wave>11 then
 		mode="win"
 		lockout=t+30
-		music(0)
+		music(8)
 	else
 		mode="wavetext"
 		--slight adjustment to wavetime for wave 1 to account for sfx
