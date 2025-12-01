@@ -35,6 +35,8 @@ function _init()
 	
 	--floater messages
 	floats={}
+
+	debug="debug"
 end
 
 --gameplay
@@ -76,6 +78,8 @@ function _draw()
 	elseif mode == "win" then
 		draw_win()
 	end
+
+	print(debug, 2,8)
 end
 
 --update functions
@@ -964,7 +968,7 @@ function start_game()
 	music(-1)
 	music(6)
 	--sets wave number
-	wave=0
+	wave=10
 	--sets game timer
 	timer_frames=0
 	timer_seconds=0
@@ -1510,6 +1514,7 @@ function creature_do(creature)
 			if creature.boss==true then
 				--boss mission 1
 				creature.mission="boss_1"
+				creature.phbegin=t
 			else
 				--other creatures hover
 				creature.mission="hover"	
@@ -1519,18 +1524,16 @@ function creature_do(creature)
 	elseif creature.mission=="hover" then
 	--staying put
 	elseif creature.mission=="boss_1" then
-		if t%15==0 then
-			fire(creature,0,2)
-		end
-	--boss missions:
+	--boss missions
+		boss_1(creature)
 	elseif creature.mission=="boss_2" then
-	
+		boss_2(creature)
 	elseif creature.mission=="boss_3" then
-	
+		boss_3(creature)
 	elseif creature.mission=="boss_4" then
-	
+		boss_4(creature)
 	elseif creature.mission=="boss_5" then
-	
+		boss_5(creature)
 	elseif creature.mission=="attack" then
 	--attacking ghost by flying down
 		if creature.type==1 then
@@ -1606,8 +1609,8 @@ function creature_do(creature)
 				end
 			end
 		end
-		move(creature)
 	end
+	move(creature)
 end
 
 --picks creature from list and sets it to attack
@@ -1957,4 +1960,49 @@ function ghost_bomb()
 	shake=5
 	muzzle=5
 	invul=30
+end
+
+function boss_1(creature)
+	--movement
+	local spd=2
+
+	if creature.sx==0 or creature.x>=93 then
+		creature.sx=-spd
+	end
+	if creature.x<=3 then
+		creature.sx=spd
+	end
+	
+	if creature.phbegin+8*30<t then
+		creature.mission="boss_2"
+		creature.phbegin=t
+	end
+end
+
+function boss_2(creature)
+	debug="boss_2"
+	if creature.phbegin+8*30<t then
+		creature.mission="boss_3"
+		creature.phbegin=t
+	end
+end
+
+function boss_3(creature)
+	debug="boss_3"
+	if creature.phbegin+8*30<t then
+		creature.mission="boss_4"
+		creature.phbegin=t
+	end
+end
+
+function boss_4(creature)
+	debug="boss_4"
+	if creature.phbegin+8*30<t then
+		creature.mission="boss_1"
+		creature.phbegin=t
+	end
+end
+
+function boss_5(creature)
+	 
 end
