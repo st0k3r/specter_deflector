@@ -968,7 +968,7 @@ function start_game()
 	music(-1)
 	music(6)
 	--sets wave number
-	wave=10
+	wave=0
 	--sets game timer
 	timer_frames=0
 	timer_seconds=0
@@ -1732,6 +1732,7 @@ function kill_creature(creature)
 			pick_attack()
 		end
 		show_float("busted!",creature.x+4,creature.y+4)
+		ghost_mode_timer+=5
 		pickup_chance=0.2
 	end
 	
@@ -1768,6 +1769,7 @@ function pickup_logic(pickup)
 			show_float("ghoulish!",pickup.x+4,pickup.y+4)
 		--if the players lives are equal to max lives:
 		else
+		--[[
 		--if ghost mode is less than max:
 			if ghost_mode_timer<90 then
 				--ghost mode timer resets to max
@@ -1791,7 +1793,7 @@ function pickup_logic(pickup)
 		else
 		--if ghost mode timer is more than half:
 			sfx(11)
-			show_float("100",pickup.x+4,pickup.y+4)	
+			show_float("100",pickup.x+4,pickup.y+4)]]--	
 		end
 	else
 		sfx(11)			
@@ -1972,7 +1974,8 @@ function boss_1(creature)
 	if creature.x<=3 then
 		creature.sx=spd
 	end
-	
+
+	--transition
 	if creature.phbegin+8*30<t then
 		creature.mission="boss_2"
 		creature.phbegin=t
