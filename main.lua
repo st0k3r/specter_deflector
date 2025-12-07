@@ -63,7 +63,7 @@ function _draw()
 		draw_win()
 	end
 
-	print(debug, 2,8)
+	--print(debug, 2,8)
 end
 
 --update functions
@@ -825,7 +825,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=1
+	wave=0
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -847,7 +847,7 @@ function start_game()
  	score=0
  	max_lives=4
  	lives=4
- 	bombs=10
+ 	bombs=0
 	
  	bombs_sprites={52,53,54}
  	bombs_sprite=rnd(bombs_sprites)
