@@ -213,38 +213,33 @@ function controls()
 	--ghost mode
 		--ghost mode cannot be used during periods of invulnerability ex. after being hit
 		if invul<=0 then
-			--ghost mode cannot be used if ghost mode timer is depleted
-			if ghost_mode_timer>0 then
+			--ghost mode cannot be used if no candy pickups
+			if bombs>0 then
 				--ghost mode cannot be used during wave text
 				if wavetime<=0 then
 					ghost.mode=1
-	 				ghost_mode_timer-=1
-				end
-	 			if ghost_mode_timer==0 then
-				--play sfx if ghost mode is depleted to 0
-	 				sfx(9)
-	 			end
+					bombs-=0.1
+					if bombs<=0 then
+					--play sfx if candy is depleted to 0
+	 					sfx(9)
+	 				end
 	 			sfx_check+=1
 	 			sfxcheck()
+				end
 	 		end
 		end
- 	end
+	end
  	if btn(4) and btnp(5) then
 	--bomb
 		--ghost bomb can only be used if there is at least one bomb in bombs
 		if bombs>0 then
 			--ghost bomb cannot be used during periods of invulnerability ex. after being hit
 			if invul<=0 then
-				--ghost bomb can only be used during ghost mode, which requires ghost mode timer to be greater than 0
-				if ghost_mode_timer>0 then
-					--ghost bomb cannot be used during wave text
-					if wavetime<=0 then	
-						--number of projectiles fired is based on number of bombs (candy)
-						ghost_bomb(bombs)
-						bombs=0	
-						--using ghost bomb depletes ghost mode to 0
-						ghost_mode_timer=0			
-					end
+				--ghost bomb cannot be used during wave text
+				if wavetime<=0 then	
+					--number of projectiles fired is based on number of bombs (candy)
+					ghost_bomb(bombs)
+					bombs=0			
 				end
 			end
 		--when no bombs (candy) are available:
@@ -253,21 +248,16 @@ function controls()
 			if invul<=0 then
 				--no message shown during wave text
 				if wavetime<=0 then
-					--if ghost mode is depleted, show no energy message
-					if ghost_mode_timer==0 then
-						show_btn_float("no energy...",ghost.x+4,ghost.y+4)
-					--if no bombs are available, show no candy message
-					else
-						show_btn_float("no candy...",ghost.x+4,ghost.y+4)
-					end
+				--if ghost mode is depleted, show no energy message
+					show_btn_float("no candy...",ghost.x+4,ghost.y+4)
 				end
 			end
 		end
 	end
 	--if ghost mode is depleted, show no energy message
 	if btnp(4) then
-		if ghost_mode_timer<=0 then
-			show_btn_float("no energy...",ghost.x+4,ghost.y+4)
+		if bombs<=0 then
+			show_btn_float("no candy...",ghost.x+4,ghost.y+4)
 		end
 	end
  	if btn(5) then
@@ -334,6 +324,7 @@ function controls()
 	bullet_timer=bullet_timer-1
 end
 
+
 --ghost mode sfx maintainer
 function sfxcheck()
 	if sfx_check==1 then
@@ -349,7 +340,7 @@ function z_check()
 	
 	if is_holding==true and is_down==false then
 		sfx_check=0
-		if ghost_mode_timer>0 then
+		if bombs>0 then
 			if wavetime<=0 then
 				sfx(9)
 			end
@@ -532,7 +523,7 @@ function collision_creature_bullet()
 					elseif creature_bullet.spr>=148 and creature_bullet.spr<=150 then
 						--blue potion causes 1 damage and depletes ghost mode
 						lives-=1
-						ghost_mode_timer=0
+						bombs=0
 						show_float("sapped!",creature_bullet.x,creature_bullet.y)
 					else
 						--all other creature bullets cause 1 damage
@@ -673,7 +664,7 @@ function draw_game()
 	draw_score()
 	draw_lives()
 	draw_bombs()
-	draw_ghost_mode()
+	--draw_ghost_mode()
 end
 
 --draws start screen - called when mode is set to "start"
@@ -894,11 +885,11 @@ end
 --draws bombs (candy) ui
 function draw_bombs()
 	spr(bombs_sprite,108,0)
-	print(bombs,118,1,14)
+	print(ceil(bombs),118,1,14)
 end
 
 --[[ ghost mode indicator in
-bottom left ]]--
+bottom left
 function draw_ghost_mode()
 	if ghost_mode_timer>0 then
 		if ghost_mode_timer>=90 then
@@ -951,6 +942,7 @@ function draw_ghost_mode()
 		end
 	end
 end
+]]--
 
 --initialization
 
@@ -997,7 +989,7 @@ function start_game()
  	max_lives=4
  	lives=4
 	--bombs (candy)
- 	bombs=0
+ 	bombs=10
 	
 	--randomizes bomb (candy) sprite for UI
  	bombs_sprites={52,53,54}
@@ -1031,9 +1023,6 @@ function start_game()
  
  	--sets frames to 0 at start
  	t=0
-		
-	--sets ghost mode timer to max at game start
- 	ghost_mode_timer=90
 		
 	--sets default timeout for floating text messages
  	floater_timeout=60
@@ -1732,7 +1721,13 @@ function kill_creature(creature)
 			pick_attack()
 		end
 		show_float("busted!",creature.x+4,creature.y+4)
-		ghost_mode_timer+=5
+		--[[if ghost_mode_timer>=86  then
+			ghost_mode_timer=90
+		end
+		if ghost_mode_timer<=85 then
+			ghost_mode_timer+=5
+		end]]--
+
 		pickup_chance=0.2
 	end
 	
@@ -1870,7 +1865,7 @@ function fire(creature,ang,spd)
 	elseif creature.type==2 then
 	--witch
 	--blue potion (spr148) potion saps ghost mode energy, so it should only be available if ghost mode is not already depleted
-		if ghost_mode_timer>0 then
+		if bombs>0 then
 			potion_sprites={40,132,148}
 		else 
 			potion_sprites={40,132}
