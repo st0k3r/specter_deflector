@@ -167,18 +167,24 @@ end
 --sets ghost speed and sprite
 function set_ghost_params()
 	ghost.xspeed=0
-
-	if ghost.controlled==true and t<=controlled_timer then
-		ghost.yspeed=-1
-	else
-		ghost.yspeed=0
-	end
 	
 	if ghost.mode==1 then
 		ghost.spr=31
 	else
 		ghost.spr=2
 	end
+
+	if t<=controlled_timer then
+		ghost.yspeed=-1
+		if ghost.mode==1 then
+			ghost.spr=33
+		else
+			ghost.spr=4
+		end
+	else
+		ghost.yspeed=0
+	end
+
 	ghost.mode=0
 	ghost.bomb=false
 end
@@ -263,7 +269,7 @@ function controls()
 			ghost.spr=3
 		end
 	end
-	if btn(2) then
+	if btn(2) and t>controlled_timer then
 		ghost.yspeed=-2
 		if ghost.mode==1 then
 			ghost.spr=33
@@ -272,11 +278,11 @@ function controls()
 			ghost.spr=4
 		end
  	end
- 	if btn(3) then
+ 	if btn(3) and t>controlled_timer then
  		ghost.yspeed=2
  		if ghost.mode==1 then
- 			ghost.spr=34
- 			ghost.yspeed*=2
+			ghost.spr=34
+			ghost.yspeed*=2
  		else
  			ghost.spr=5
  		end
@@ -447,20 +453,24 @@ function collision_creature_bullet()
 					if creature_bullet.spr==46 or creature_bullet.spr==51 then
 						lives=lives-2
 						show_float("headshot!",creature_bullet.x,creature_bullet.y)
+						invul=60
 					elseif creature_bullet.spr>=40 and creature_bullet.spr<=42 then
 						lives-=1
 						max_lives-=1
 						show_float("poisoned",creature_bullet.x,creature_bullet.y)
+						invul=60
 					elseif creature_bullet.spr>=132 and creature_bullet.spr<=134 then
-						lives-=1
-						ghost.controlled=true
 						controlled_timer=t+60
+						show_float("controlled!",creature_bullet.x,creature_bullet.y)
+						invul=0
 					elseif creature_bullet.spr>=148 and creature_bullet.spr<=150 then
 						lives-=1
 						bombs=0
 						show_float("tricked!",creature_bullet.x,creature_bullet.y)
+						invul=60
 					else
 						lives-=1
+						invul=60
 					end
 					spawn_explosion(ghost.x+4,ghost.y+4,true)
 					shake=10
@@ -468,7 +478,6 @@ function collision_creature_bullet()
 					if lives>=1 then
 						sfx(1)
 					end
-					invul=60
 				end	
 			end
 		end
@@ -816,7 +825,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=0
+	wave=1
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -829,7 +838,7 @@ function start_game()
 	ghost.y=64
  	ghost.xspeed=0
  	ghost.yspeed=0
-	ghost.controlled=false
+	controlled_timer=0
 
 	bullet_timer=0
 
@@ -1612,11 +1621,20 @@ function fire(creature,ang,spd)
 		end
 	creature.has_fired=true	
 	elseif creature.type==2 then
-		if bombs>0 then
+		if bombs<=0 or controlled_timer>=t then
+			if bombs<=0 and controlled_timer>=t then
+				potion_sprites={40}
+			end
+			if bombs<=0 and controlled_timer<t then
+				potion_sprites={40,132}
+			end
+			if bombs>0 and controlled_timer>=t then
+				potion_sprites={40,148}
+			end
+		else
 			potion_sprites={40,132,148}
-		else 
-			potion_sprites={40,132}
 		end
+
 		creature_bullet.spr=rnd(potion_sprites)
 		if creature_bullet.spr==132 then
 			creature_bullet.animation={132,133,134}
