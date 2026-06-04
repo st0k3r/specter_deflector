@@ -1735,8 +1735,10 @@ function boss_1(creature)
 		creature.sx=spd
 	end
 
-	if t%3==0 then
-		fire(creature,0,2)
+	if t%30>1 then
+		if t%3==0 then
+			fire(creature,0,2)
+		end
 	end
 
 	if creature.phbegin+8*30<t then
