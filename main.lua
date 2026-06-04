@@ -825,7 +825,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=0
+	wave=10
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -1581,7 +1581,11 @@ end
 
 --called when creature  mission is "fire" - shoots projectile at ghost
 function fire(creature,ang,spd)
-	sfx(10)
+    if creature.boss then 
+		sfx(18)
+	else
+		sfx(10)
+	end
 	local creature_bullet=makespr()
 	creature_bullet.x=creature.x-1
 	creature_bullet.y=creature.y
@@ -1729,6 +1733,10 @@ function boss_1(creature)
 	end
 	if creature.x<=3 then
 		creature.sx=spd
+	end
+
+	if t%3==0 then
+		fire(creature,0,2)
 	end
 
 	if creature.phbegin+8*30<t then

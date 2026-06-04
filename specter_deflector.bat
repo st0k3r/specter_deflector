@@ -1,1 +1,1 @@
-start "" code "C:\Pico-8\carts\Specter_Deflector"
+start "" code "D:\Pico-8\Cart\Specter_Deflector"
