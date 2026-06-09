@@ -63,7 +63,7 @@ function _draw()
 		draw_win()
 	end
 
-	--print(debug, 2,8)
+	print(debug, 2,8)
 end
 
 --update functions
@@ -825,7 +825,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=0
+	wave=10
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -1419,8 +1419,8 @@ function creature_do(creature)
 				end
 			end
 		end
+		move(creature)
 	end
-	move(creature)
 end
 
 --picks creature from list and sets it to attack
@@ -1730,14 +1730,13 @@ end
 --boss mission 1
 function boss_1(creature)
 	local spd=2
-
 	if creature.sx==0 or creature.x>=93 then
 		creature.sx=-spd
 	end
 	if creature.x<=3 then
 		creature.sx=spd
 	end
-
+	debug=creature.sx
 	if t%30>1 then
 		if t%3==0 then
 			fire(creature,0,2)
@@ -1748,6 +1747,7 @@ function boss_1(creature)
 		creature.mission="boss_2"
 		creature.phbegin=t
 	end
+	move(creature)
 end
 
 --boss mission 2
