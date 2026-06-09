@@ -825,7 +825,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=10
+	wave=0
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -1368,6 +1368,9 @@ function creature_do(creature)
 				if creature.y>ghost.y then
 					creature.sy=1
 					creature.sx=0
+					if invul<=0 and ghost.mode!=1 then
+						aimedfire(creature,2)
+					end
 				else
 					if invul<=0 and ghost.mode!=1 then
 						move_ang(creature,ang,1)
