@@ -25,7 +25,7 @@ function _init()
 	
 	floats={}
 
-	debug="debug"
+	--debug="debug"
 end
 
 --gameplay
@@ -63,7 +63,7 @@ function _draw()
 		draw_win()
 	end
 
-	print(debug, 2,8)
+	--print(debug, 2,8)
 end
 
 --update functions
@@ -1736,7 +1736,6 @@ function boss_1(creature)
 	if creature.x<=3 then
 		creature.sx=spd
 	end
-	debug=creature.sx
 	if t%30>1 then
 		if t%3==0 then
 			fire(creature,0,2)
