@@ -964,8 +964,8 @@ function collision(a,b)
 		
 	local b_left=b.x
 	local b_top=b.y
-	local b_right=b.x+a.w-1
-	local b_bottom=b.y+a.h-1
+	local b_right=b.x+b.w-1
+	local b_bottom=b.y+b.h-1
 		
 	if a_top > b_bottom then
 		return false
@@ -1042,12 +1042,12 @@ function spawn_creature(creature_type,x,y,wait)
  		creature.anispeed=1
  		creature.has_fired=false
  		creature.width=4
- 		creature.height=4
+ 		creature.height=3
  		creature.w=32
- 		creature.h=32
+ 		creature.h=24
  	
  		creature.x=48
- 		creature.y=-32
+ 		creature.y=-24
  
  		creature.posx=48
  		creature.posy=25
@@ -1368,8 +1368,16 @@ function creature_do(creature)
 				if creature.y>ghost.y then
 					creature.sy=1
 					creature.sx=0
-					if invul<=0 and ghost.mode!=1 then
+					if invul<=0 and ghost.mode!=1 and creature.y<127 then
 						aimedfire(creature,2)
+						creature.sx=sin(t/45)
+						if creature.hp>=3 then
+							creature.spr=47
+							creature.animation={47,47,48,48}
+						else
+							creature.spr=49
+							creature.animation={49,49,50,50}
+						end
 					end
 				else
 					if invul<=0 and ghost.mode!=1 then
@@ -1745,17 +1753,41 @@ function boss_1(creature)
 	if creature.phbegin+8*30<t then
 		creature.mission="boss_2"
 		creature.phbegin=t
+		creature.subphase=1
 	end
 	move(creature)
 end
 
 --boss mission 2
 function boss_2(creature)
-	debug="boss_2"
-	if creature.phbegin+8*30<t then
-		creature.mission="boss_3"
-		creature.phbegin=t
+	local spd=2
+
+	if creature.subphase==1 then
+		creature.sx=-spd
+		if creature.x<=4 then
+			creature.subphase=2
+		end
+	elseif creature.subphase==2 then
+		creature.sx=0
+		creature.sy=spd
+		if creature.y>=100 then
+			creature.subphase=3
+		end
+	elseif creature.subphase==3 then
+		creature.sx=spd
+		creature.sy=0
+		if creature.x>=91 then
+			creature.subphase=4
+		end
+	elseif creature.subphase==4 then
+		creature.sx=0
+		creature.sy=-spd
+		if creature.y<=25 then
+			creature.mission="boss_3"
+			creature.phbegin=t
+		end
 	end
+	move(creature)
 end
 
 --boss mission 3
