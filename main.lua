@@ -1787,6 +1787,9 @@ function boss_2(creature)
 			creature.phbegin=t
 		end
 	end
+	if t%15==0 then
+		aimedfire(creature,2)
+	end
 	move(creature)
 end
 
