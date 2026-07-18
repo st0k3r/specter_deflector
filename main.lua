@@ -1746,7 +1746,7 @@ function boss_1(creature)
 	end
 	if t%30>3 then
 		if t%3==0 then
-			fire(creature,0,2)
+			fire(creature,0,2.25)
 		end
 	end
 
@@ -1810,6 +1810,7 @@ function boss_3(creature)
 
 	if creature.phbegin+8*30<t then
 		creature.mission="boss_4"
+		creature.subphase=1
 		creature.phbegin=t
 	end
 	move(creature)
@@ -1817,11 +1818,47 @@ end
 
 --boss mission 4
 function boss_4(creature)
-	debug="boss_4"
-	if creature.phbegin+8*30<t then
-		creature.mission="boss_1"
-		creature.phbegin=t
+	local spd=1.5
+
+	if creature.subphase==1 then
+		creature.sx=spd
+		if creature.x>=91 then
+			creature.subphase=2
+		end
+	elseif creature.subphase==2 then
+		creature.sx=0
+		creature.sy=spd
+		if creature.y>=100 then
+			creature.subphase=3
+		end
+	elseif creature.subphase==3 then
+		creature.sx=-spd
+		creature.sy=0
+		if creature.x<=4 then
+			creature.subphase=4
+		end
+	elseif creature.subphase==4 then
+		creature.sx=0
+		creature.sy=-spd
+		if creature.y<=25 then
+			creature.mission="boss_1"
+			creature.phbegin=t
+			creature.sy=0
+		end
 	end
+
+	if t%12==0 then
+		if creature.subphase==1 then
+			fire(creature,0,2)
+		elseif creature.subphase==2 then
+			fire(creature,0.25,2)
+		elseif creature.subphase==3 then
+			fire(creature,0.5,2)
+		elseif creature.subphase==4 then
+			fire(creature,0.75,2)
+		end
+	end
+	move(creature)
 end
 
 --boss mission 5
