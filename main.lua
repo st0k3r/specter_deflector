@@ -1744,7 +1744,7 @@ function boss_1(creature)
 	if creature.x<=3 then
 		creature.sx=spd
 	end
-	if t%30>1 then
+	if t%30>3 then
 		if t%3==0 then
 			fire(creature,0,2)
 		end
