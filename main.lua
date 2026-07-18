@@ -1760,7 +1760,7 @@ end
 
 --boss mission 2
 function boss_2(creature)
-	local spd=2
+	local spd=1.5
 
 	if creature.subphase==1 then
 		creature.sx=-spd
