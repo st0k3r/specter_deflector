@@ -1785,6 +1785,7 @@ function boss_2(creature)
 		if creature.y<=25 then
 			creature.mission="boss_3"
 			creature.phbegin=t
+			creature.sy=0
 		end
 	end
 	if t%15==0 then
@@ -1795,11 +1796,23 @@ end
 
 --boss mission 3
 function boss_3(creature)
-	debug="boss_3"
+	local spd=0.5
+	if creature.sx==0 or creature.x>=93 then
+		creature.sx=-spd
+	end
+	if creature.x<=3 then
+		creature.sx=spd
+	end
+
+	if t%10==0 then
+		spreadshot(creature,8,2,time())
+	end
+
 	if creature.phbegin+8*30<t then
 		creature.mission="boss_4"
 		creature.phbegin=t
 	end
+	move(creature)
 end
 
 --boss mission 4
