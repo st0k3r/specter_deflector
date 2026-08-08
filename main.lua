@@ -377,7 +377,10 @@ function collision_bullet()
 
 				make_slime(creature.x+4,creature.y+4)
 
-				creature.hp=creature.hp-bullet.dmg
+				if creature.mission != "fly_in" then
+					creature.hp=creature.hp-bullet.dmg
+				end
+
 				sfx(3)
 
 				if creature.boss==true then
@@ -758,14 +761,14 @@ function draw_explosions()
 	for explosion in all(explosions) do
 		local pc=7
 		
-		if explosion.green then
+		if explosion.green==true then
 			pc=11
 		else
 			pc=particle_age_red(explosion.age)
 		end
 		
 		if explosion.spark then
-			pset(explosion.x,explosion.y,11)
+			pset(explosion.x,explosion.y,pc)
 		else
 			circfill(explosion.x,explosion.y,explosion.size,pc)
 		end
@@ -825,7 +828,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=10
+	wave=0
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -957,6 +960,10 @@ end
 
 --collision detection
 function collision(a,b)
+	if a.no_interact or b.no_interact then
+		return false
+	end
+	
 	local a_left=a.x
 	local a_top=a.y
 	local a_right=a.x+a.w-1
@@ -1037,7 +1044,7 @@ function spawn_creature(creature_type,x,y,wait)
  		creature.h=16
  elseif creature_type==5  then
 		creature.spr=196
- 		creature.hp=100
+ 		creature.hp=130
  		creature.animation={196}
  		creature.anispeed=1
  		creature.has_fired=false
@@ -1072,17 +1079,74 @@ function spawn_explosion(exp_x,exp_y,isgreen)
 
 	add(explosions,explosion)
 	
-	for i=1,3 do
+	for i=1,30 do
 		local explosion={}
 		explosion.x=exp_x
 	 	explosion.y=exp_y
-		explosion.explosion_speed_x=(rnd()-0.5)*6
-		explosion.explosion_speed_y=(rnd()-0.5)*6
+		explosion.explosion_speed_x=(rnd()-0.5)*6-3
+		explosion.explosion_speed_y=(rnd()-0.5)*6-3
 		explosion.age=rnd(2)
 		explosion.size=1+rnd(4)
 		explosion.maxage=10+rnd(10)
 		explosion.green=isgreen
 		
+		add(explosions,explosion)
+	end
+
+	for i=1,20 do
+		local explosion={}
+		explosion.x=exp_x
+	 	explosion.y=exp_y
+		explosion.explosion_speed_x=(rnd()-0.5)*10
+		explosion.explosion_speed_y=(rnd()-0.5)*10
+		explosion.age=rnd(2)
+		explosion.size=1+rnd(4)
+		explosion.maxage=10+rnd(10)
+		explosion.green=isgreen
+		explosion.spark=true
+
+		add(explosions,explosion)
+	end
+end
+
+function spawn_boss_explosion(exp_x,exp_y)
+	local explosion={}
+	explosion.x=exp_x
+	explosion.y=exp_y
+	explosion.explosion_speed_x=0
+	explosion.explosion_speed_y=0
+	explosion.age=0
+	explosion.size=25
+	explosion.maxage=0
+
+	add(explosions,explosion)
+	
+	for i=1,60 do
+		local explosion={}
+		explosion.x=exp_x
+	 	explosion.y=exp_y
+
+		explosion.explosion_speed_x=(rnd()-0.5)*12-6
+		explosion.explosion_speed_y=(rnd()-0.5)*12-6
+
+		explosion.age=rnd(2)
+		explosion.size=1+rnd(6)
+		explosion.maxage=20+rnd(10)
+		
+		add(explosions,explosion)
+	end
+
+	for i=1,100 do
+		local explosion={}
+		explosion.x=exp_x
+	 	explosion.y=exp_y
+		explosion.explosion_speed_x=(rnd()-0.5)*30
+		explosion.explosion_speed_y=(rnd()-0.5)*30
+		explosion.age=rnd(2)
+		explosion.size=1+rnd(4)
+		explosion.maxage=20+rnd(10)
+		explosion.spark=true
+
 		add(explosions,explosion)
 	end
 end
@@ -1144,10 +1208,10 @@ function make_slime(hit_x,hit_y)
 	explosion.age=rnd(2)
 	explosion.size=1+rnd(4)
 	explosion.maxage=10+rnd(10)
-	explosion.green=isgreen
+	explosion.green=true
 	explosion.spark=true
-		
-	add(explosions,explosion)
+				
+	add(explosions,explosion)	
 end
 
 --function to show floating text messages
@@ -1527,6 +1591,14 @@ end
 
 --called when creature hp is equal to or less than 0
 function kill_creature(creature)
+	if creature.boss then
+		creature.mission = "boss_5"
+		creature.phbegin = t
+		creature.no_interact = true
+		creature_bullets={}
+		return
+	end
+
 	del(creatures,creature)
 	sfx(2)
 	score=score+1
@@ -1863,5 +1935,26 @@ end
 
 --boss mission 5
 function boss_5(creature)
-	 
+	creature.shake=10
+	creature.flash=10
+
+	if t%8==0 then
+		spawn_explosion(creature.x+rnd(32), creature.y+rnd(32), false)
+		sfx(2)
+		shake=2
+	end
+
+	if creature.phbegin+2*30<t then
+		if t%5==0 then
+		spawn_explosion(creature.x+rnd(32), creature.y+rnd(32), false)
+		sfx(2)
+		end
+	end
+
+	 if creature.phbegin+4*30<t then
+		spawn_boss_explosion(creature.x+16, creature.y+12)
+		sfx(19)
+		shake=15
+		creatures={}
+	end
 end
