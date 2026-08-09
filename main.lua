@@ -1428,8 +1428,8 @@ function creature_do(creature)
 			if creature.boss==true then
 				sfx(40)
 				creature.mission="boss_1"
-				creature.shake=30
-				creature.wait=30
+				creature.shake=20
+				creature.wait=28
 				creature.phbegin=t
 			else
 				creature.mission="hover"	
