@@ -836,7 +836,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=10
+	wave=9
 	lastwave=11
 	timer_frames=0
 	timer_seconds=0
@@ -1053,7 +1053,7 @@ function spawn_creature(creature_type,x,y,wait)
  		creature.h=16
  elseif creature_type==5  then
 		creature.spr=196
- 		creature.hp=5
+ 		creature.hp=130
  		creature.animation={196}
  		creature.anispeed=1
  		creature.has_fired=false
