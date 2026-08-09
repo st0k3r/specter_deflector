@@ -836,7 +836,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=9
+	wave=0
 	lastwave=11
 	timer_frames=0
 	timer_seconds=0
