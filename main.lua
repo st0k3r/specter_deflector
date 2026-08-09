@@ -18,7 +18,8 @@ function _init()
 	graveyard_gen()
 	
 	lockout=0
-	
+	win_music_pending=false
+
 	shake=0
 	
 	pickups={}
@@ -148,6 +149,13 @@ end
 
 --win state - called when mode is set to "win"
 function update_win()
+	if win_music_pending then
+		if not sfx_playing(19) then
+			music(8)
+			win_music_pending=false
+		end
+	end
+
 	if t<lockout then
 		return
 	end
@@ -828,7 +836,8 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=0
+	wave=10
+	lastwave=11
 	timer_frames=0
 	timer_seconds=0
 	timer_minutes=0
@@ -1044,7 +1053,7 @@ function spawn_creature(creature_type,x,y,wait)
  		creature.h=16
  elseif creature_type==5  then
 		creature.spr=196
- 		creature.hp=130
+ 		creature.hp=5
  		creature.animation={196}
  		creature.anispeed=1
  		creature.has_fired=false
@@ -1347,7 +1356,11 @@ function place_creatures(lvl)
 		local y_line=lvl[y]
 		for x=1,10 do
 			if y_line[x]!=0 do
-				sfx(7)
+				if wave<lastwave then
+					sfx(7)
+				else
+					music(9)
+				end
 				spawn_creature(y_line[x],x*12-6,4+y*12,x*4)
 			end
 		end
@@ -1359,11 +1372,11 @@ function next_wave()
 	wave+=1
 	sfx_check=0
 	is_holding=false
-	
+
 	if wave>11 then
 		mode="win"
 		lockout=t+30
-		music(8)
+		win_music_pending=true
 	else
 		mode="wavetext"
 		if wave==1 then
@@ -1372,10 +1385,20 @@ function next_wave()
 			wavetime=80
 		end
 
-		if wave>1 then
+		if wave>1 and wave!=11 then
 			sfx(6)
 		end
 	end
+end
+
+--checks if a given sfx is still playing on any channel
+function sfx_playing(n)
+	for i=0,3 do
+		if stat(16+i)==n then
+			return true
+		end
+	end
+	return false
 end
 
 --behaviors
@@ -1403,7 +1426,10 @@ function creature_do(creature)
 			creature.y=creature.posy
 			creature.mission="hover"
 			if creature.boss==true then
+				sfx(40)
 				creature.mission="boss_1"
+				creature.shake=30
+				creature.wait=30
 				creature.phbegin=t
 			else
 				creature.mission="hover"	
@@ -1596,6 +1622,7 @@ function kill_creature(creature)
 		creature.phbegin = t
 		creature.no_interact = true
 		creature_bullets={}
+		sfx(41)
 		return
 	end
 
@@ -1935,6 +1962,7 @@ end
 
 --boss mission 5
 function boss_5(creature)
+	music(-1)
 	creature.shake=10
 	creature.flash=10
 
@@ -1953,8 +1981,8 @@ function boss_5(creature)
 
 	 if creature.phbegin+4*30<t then
 		spawn_boss_explosion(creature.x+16, creature.y+12)
-		sfx(19)
 		shake=15
 		creatures={}
+		sfx(19)
 	end
 end
