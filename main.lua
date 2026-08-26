@@ -79,6 +79,7 @@ function update_game()
 	move_pickups()
 	creature_movement()
 	collision_bullet()
+	collision_creature_ghost_bullets()
 	collision_ghost()
 	collision_creature_bullet()
 	collision_pickups()
@@ -434,6 +435,19 @@ function collision_bullet()
 	end
 end
 
+function collision_creature_ghost_bullets()
+	for bullet in all(bullets) do
+		if bullet.spr==8 then
+			for creature_bullet in all(creature_bullets) do
+				if collision(bullet,creature_bullet) then
+					make_small_wave(creature_bullet.x,creature_bullet.y)
+					del(creature_bullets,creature_bullet)
+				end
+			end
+		end
+	end
+end
+
 --checks for collision with ghost and creature
 function collision_ghost()
 	if invul<=0 then
@@ -650,7 +664,11 @@ end
 --draws wave text shown at beginning of each wave
 function draw_wavetext()
 	draw_game()
-	center_print("wave "..wave,64,40,blink())
+	if wave==lastwave then
+		center_print("boss wave", 64,40,blink())
+	else
+		center_print("wave "..wave.." of "..lastwave-1,64,40,blink())
+	end
 	if timer_seconds<10 then
 		center_print(timer_minutes..":0"..timer_seconds,64,49,blink())
 	else
@@ -859,7 +877,7 @@ function start_game()
  	score=0
  	max_lives=4
  	lives=4
- 	bombs=0
+ 	bombs=8
 	
  	bombs_sprites={52,53,54}
  	bombs_sprite=rnd(bombs_sprites)
