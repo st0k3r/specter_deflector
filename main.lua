@@ -854,7 +854,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=0
+	wave=10
 	lastwave=11
 	timer_frames=0
 	timer_seconds=0
@@ -1990,14 +1990,14 @@ function boss_5(creature)
 		shake=2
 	end
 
-	if creature.phbegin+2*30<t then
-		if t%5==0 then
+	if creature.phbegin+3*30<t then
+		if t%4==2 then
 		spawn_explosion(creature.x+rnd(32), creature.y+rnd(32), false)
 		sfx(2)
 		end
 	end
 
-	 if creature.phbegin+4*30<t then
+	 if creature.phbegin+6*30<t then
 		spawn_boss_explosion(creature.x+16, creature.y+12)
 		shake=15
 		creatures={}
