@@ -824,7 +824,7 @@ end
 
 --draws score
 function draw_score()
-	print("score:"..score,51,1,8)
+	print("score:"..make_score(score),51,1,8)
 end
 
 --draws lives ui
@@ -840,6 +840,13 @@ end
 function draw_bombs()
 	spr(bombs_sprite,108,0)
 	print(ceil(bombs),118,1,14)
+end
+
+function make_score(val)
+	if val==0 then
+		return "0"
+	end
+	return val.."00"
 end
 
 --initialization
