@@ -99,7 +99,8 @@ function update_game()
 			end
 	end
 
-	if mode=="game" and #creatures==0 then
+	if mode=="game" and #creatures==0 then\
+		creature_bullets={}
 		next_wave()
 	end
 end
@@ -854,7 +855,7 @@ function start_game()
 	
 	music(-1)
 	music(6)
-	wave=10
+	wave=0
 	lastwave=11
 	timer_frames=0
 	timer_seconds=0
@@ -900,6 +901,10 @@ function start_game()
  	explosions={}
 
  	shockwaves={}
+
+	pickups={}
+	
+	floats={}
 
  	t=0
 
