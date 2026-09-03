@@ -99,7 +99,7 @@ function update_game()
 			end
 	end
 
-	if mode=="game" and #creatures==0 then\
+	if mode=="game" and #creatures==0 then
 		creature_bullets={}
 		next_wave()
 	end
@@ -878,7 +878,7 @@ function start_game()
  	score=0
  	max_lives=4
  	lives=4
- 	bombs=8
+ 	bombs=0
 	
  	bombs_sprites={52,53,54}
  	bombs_sprite=rnd(bombs_sprites)
