@@ -226,7 +226,7 @@ function controls()
 		if bombs>0 then
 			if invul<=0 then
 				if wavetime<=0 then	
-					ghost_bomb(bombs)
+					ghost_bomb()
 					bombs=0			
 				end
 			end
@@ -884,7 +884,8 @@ function start_game()
  	bombs_sprite=rnd(bombs_sprites)
 
  	freq=60
- 	next_fire=0
+ 	firefreq=20
+	next_fire=0
 
  	invul=0
 
@@ -1284,6 +1285,7 @@ end
 function spawn_wave()
 	if wave==1 then
 		freq=60
+		firefreq=20
 		place_creatures({
 			{0,1,1,1,1,1,1,1,1,0},
 			{0,1,1,1,1,1,1,1,1,0},
@@ -1292,6 +1294,7 @@ function spawn_wave()
 		})		
 	elseif wave==2 then
 		freq=60
+		firefreq=20
 		place_creatures({
 			{0,2,2,2,2,2,2,2,2,0},
 			{0,2,2,2,2,2,2,2,2,0},
@@ -1300,6 +1303,7 @@ function spawn_wave()
 		})
 	elseif wave==3 then
 		freq=60
+		firefreq=20
 		place_creatures({
 			{1,1,2,2,1,1,2,2,1,1},
 			{1,1,2,2,2,2,2,2,1,1},
@@ -1307,7 +1311,8 @@ function spawn_wave()
 			{2,2,2,2,2,2,2,2,2,2}		
 	})
 	elseif wave==4 then
-		freq=60
+		freq=50
+		firefreq=15
 		place_creatures({
 			{0,3,3,3,3,3,3,3,3,0},
 			{0,3,3,3,3,3,3,3,3,0},
@@ -1315,7 +1320,8 @@ function spawn_wave()
 			{0,3,3,3,3,3,3,3,3,0}
 		})
 	elseif wave==5 then
-		freq=60
+		freq=50
+		firefreq=15
 		place_creatures({
 			{3,3,0,1,1,1,1,0,3,3},
 			{3,3,0,1,1,1,1,0,3,3},
@@ -1323,7 +1329,8 @@ function spawn_wave()
 			{3,3,0,1,1,1,1,0,3,3}		
 	})
 	elseif wave==6 then
-		freq=60
+		freq=50
+		firefreq=15
 		place_creatures({
 			{0,1,2,2,1,1,2,2,1,0},
 			{3,1,2,2,1,1,2,2,1,3},
@@ -1331,7 +1338,8 @@ function spawn_wave()
 			{0,1,2,2,2,2,2,2,1,0}		
 	})
 	elseif wave==7 then
-		freq=60
+		freq=40
+		firefreq=10
 		place_creatures({
 			{3,1,3,1,2,2,1,3,1,3},
 			{1,3,1,2,1,1,2,1,3,1},
@@ -1339,7 +1347,8 @@ function spawn_wave()
 			{1,3,1,2,1,1,2,1,3,1}		
 	})
 	elseif wave==8 then
-		freq=60
+		freq=40
+		firefreq=10
 		place_creatures({
 			{2,2,2,0,4,0,0,2,2,2},
 			{2,2,0,0,0,0,0,0,2,2},
@@ -1347,7 +1356,8 @@ function spawn_wave()
 			{1,1,0,1,1,1,1,0,1,1}		
 	})
 	elseif wave==9 then
-		freq=60
+		freq=30
+		firefreq=10
 		place_creatures({
 			{3,3,0,1,1,1,1,0,3,3},
 			{4,0,0,2,2,2,2,0,4,0},
@@ -1355,7 +1365,8 @@ function spawn_wave()
 			{1,1,0,1,1,1,1,0,1,1}		
 	})
 	elseif wave==10 then
-		freq=60
+		freq=30
+		firefreq=10
 		place_creatures({
 			{0,0,1,1,1,1,1,1,0,0},
 			{3,3,1,1,1,1,1,1,3,3},
@@ -1364,6 +1375,7 @@ function spawn_wave()
 	})
 	elseif (wave==11) then
 		freq=60
+		firefreq=20
 		place_creatures({
 			{0,0,0,0,5,0,0,0,0,0},
 			{0,0,0,0,0,0,0,0,0,0},
@@ -1552,7 +1564,7 @@ function picking()
 	
 	if t>next_fire then
 		pick_fire()
-		next_fire=t+20+rnd(20)
+		next_fire=t+firefreq+rnd(firefreq)
 	end
 	
 	if t%freq==0 then
@@ -1692,7 +1704,7 @@ function pickup_logic(pickup)
 			sfx(12)
 			show_float("ghoulish!",pickup.x+4,pickup.y+4)
 		else
-		--TODO
+			ghost_bomb()
 		end
 	else
 		sfx(11)			
