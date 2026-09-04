@@ -1060,18 +1060,21 @@ function spawn_creature(creature_type,x,y,wait)
  		creature.animation={26,26,27,27}
  		creature.anispeed=0.1
  		creature.has_fired=false
+		creature.score=1
  	elseif creature_type==2 then
  		creature.spr=22
  		creature.hp=2
  		creature.animation={22,23}
  		creature.anispeed=0.1
  		creature.has_fired=false
+		creature.score=2
  elseif creature_type==3 then
  		creature.spr=13
  		creature.hp=4
  		creature.animation={13,14,15}
  		creature.anispeed=0.1
  		creature.has_fired=false
+		creature.score=3
  elseif creature_type==4 then
  		creature.spr=64
  		creature.hp=20
@@ -1082,6 +1085,7 @@ function spawn_creature(creature_type,x,y,wait)
  		creature.height=2
  		creature.w=16
  		creature.h=16
+		creature.score=5
  elseif creature_type==5  then
 		creature.spr=196
  		creature.hp=130
@@ -1670,13 +1674,15 @@ function kill_creature(creature)
 
 	del(creatures,creature)
 	sfx(2)
-	score=score+1
+	
 	spawn_explosion(creature.x+4,creature.y+4,false)
 	make_big_wave(creature.x+4,creature.y+4)
 	
 	local pickup_chance=0.1
+	local scoremult=2
 	
 	if creature.mission=="attack" then
+		scoremult=2
 		if rnd()<0.5 then
 			pick_attack()
 		end
@@ -1684,6 +1690,8 @@ function kill_creature(creature)
 		pickup_chance=0.2
 	end
 	
+	score+=creature.score+scoremult
+
 	if rnd()<pickup_chance then
 		drop(creature.x,creature.y)
 	end
@@ -2022,6 +2030,8 @@ function boss_5(creature)
 	end
 
 	 if creature.phbegin+6*30<t then
+		score+=100
+		show_float("banished!",creature.x+16,creature.y+6)
 		spawn_boss_explosion(creature.x+16, creature.y+12)
 		shake=15
 		creatures={}
