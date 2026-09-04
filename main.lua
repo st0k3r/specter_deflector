@@ -441,8 +441,9 @@ function collision_creature_ghost_bullets()
 		if bullet.spr==8 then
 			for creature_bullet in all(creature_bullets) do
 				if collision(bullet,creature_bullet) then
-					make_small_wave(creature_bullet.x,creature_bullet.y)
 					del(creature_bullets,creature_bullet)
+					score+=5
+					make_small_wave(creature_bullet.x,creature_bullet.y)
 				end
 			end
 		end
@@ -1719,6 +1720,8 @@ function pickup_logic(pickup)
 			sfx(12)
 			show_float("ghoulish!",pickup.x+4,pickup.y+4)
 		else
+			score+=50
+			show_float("unleashed!",pickup.x+4,pickup.y+4)
 			ghost_bomb()
 		end
 	else
