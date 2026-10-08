@@ -26,6 +26,8 @@ function _init()
 	
 	floats={}
 
+	highscore=0
+	hightime=0
 	--debug="debug"
 end
 
@@ -641,26 +643,48 @@ end
 --draws game over screen - called when mode is set to "over"
 function draw_over()
 	draw_game()
-	center_print("r.i.p.",64,40,8)
-	if timer_seconds<10 then
-		center_print(timer_minutes..":0"..timer_seconds,64,49,blink())
-	else
-		center_print(timer_minutes..":"..timer_seconds,64,49,blink())
+	center_print("r.i.p.",64,32,8)
+	center_print("score:"..make_score(score),64,42,8)
+
+	if score>highscore then
+		center_print("new high score!",64,49,10)
 	end
-	center_print("press ❎ to continue",64,80,blink())
+
+	if timer_seconds<10 then
+		center_print(timer_minutes..":0"..timer_seconds,64,59,blink())
+	else
+		center_print(timer_minutes..":"..timer_seconds,64,59,blink())
+	end
+
+	if timer_minutes*60+timer_seconds>hightime then
+		center_print("new high time!",64,66,10)
+	end
+
+	center_print("press ❎ to continue",64,76,blink())
 end
 
 --[[ draws win screen - called
 when mode is set to "win" ]]--
 function draw_win()
 	draw_game()
-	center_print("the horde is gone...for now",64,40,8)
+	center_print("the horde is gone...for now",64,32,8)
+	center_print("score:"..make_score(score),64,42,8)
+
+	if score>highscore then
+		center_print("new high score!",64,49,10)
+	end
+
 	if timer_seconds<10 then
-		center_print(timer_minutes..":0"..timer_seconds,64,49,8)
+		center_print(timer_minutes..":0"..timer_seconds,64,59,blink())
 	else
-		center_print(timer_minutes..":"..timer_seconds,64,49,8)
-	end	
-	center_print("press ❎ to continue",64,80,blink())
+		center_print(timer_minutes..":"..timer_seconds,64,59,blink())
+	end
+
+	if timer_minutes*60+timer_seconds>hightime then
+		center_print("new high time!",64,66,10)
+	end
+
+	center_print("press ❎ to continue",64,76,blink())
 end
 
 --draws wave text shown at beginning of each wave
@@ -825,7 +849,9 @@ end
 
 --draws score
 function draw_score()
-	print("score:"..make_score(score),51,1,8)
+	if mode=="game" then
+		print("score:"..make_score(score),51,2,8)
+	end	
 end
 
 --draws lives ui
