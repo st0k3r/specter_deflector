@@ -28,6 +28,8 @@ function _init()
 
 	highscore=0
 	hightime=0
+	new_hs=false
+	new_ht=false
 	--debug="debug"
 end
 
@@ -527,6 +529,14 @@ end
 function lives_check()
 	if lives<=0 then
 		mode="over"
+		if score>highscore then
+			new_hs=true
+			highscore=score
+		end
+		if timer_minutes*60+timer_seconds>hightime then
+			new_ht=true
+			hightime=timer_minutes*60+timer_seconds
+		end
 		lockout=t+30
 		sfx(-1)
 		music(7)
@@ -643,10 +653,10 @@ end
 --draws game over screen - called when mode is set to "over"
 function draw_over()
 	draw_game()
-	center_print("r.i.p.",64,32,8)
-	center_print("score:"..make_score(score),64,42,8)
+	center_print("r.i.p.",64,32, blink())
+	center_print("score:"..make_score(score),64,42, blink())
 
-	if score>highscore then
+	if new_hs==true then
 		center_print("new high score!",64,49,10)
 	end
 
@@ -656,7 +666,7 @@ function draw_over()
 		center_print(timer_minutes..":"..timer_seconds,64,59,blink())
 	end
 
-	if timer_minutes*60+timer_seconds>hightime then
+	if new_ht==true then
 		center_print("new high time!",64,66,10)
 	end
 
@@ -667,10 +677,10 @@ end
 when mode is set to "win" ]]--
 function draw_win()
 	draw_game()
-	center_print("the horde is gone...for now",64,32,8)
-	center_print("score:"..make_score(score),64,42,8)
+	center_print("the horde is gone...for now",64,32,blink())
+	center_print("score:"..make_score(score),64,42,blink())
 
-	if score>highscore then
+	if new_hs==true then
 		center_print("new high score!",64,49,10)
 	end
 
@@ -680,7 +690,7 @@ function draw_win()
 		center_print(timer_minutes..":"..timer_seconds,64,59,blink())
 	end
 
-	if timer_minutes*60+timer_seconds>hightime then
+	if new_ht==true then
 		center_print("new high time!",64,66,10)
 	end
 
@@ -1448,6 +1458,14 @@ function next_wave()
 
 	if wave>11 then
 		mode="win"
+		if highscore>score then
+			new_hs=true
+			highscore=score
+		end
+		if timer_minutes*60+timer_seconds>hightime then
+			new_ht=true
+			hightime=timer_minutes*60+timer_seconds
+		end
 		lockout=t+30
 		win_music_pending=true
 	else
