@@ -28,8 +28,6 @@ function _init()
 
 	highscore=0
 	hightime=0
-	new_hs=false
-	new_ht=false
 	--debug="debug"
 end
 
@@ -97,10 +95,6 @@ function update_game()
 	if timer_frames==30 then
 		timer_seconds+=1
 		timer_frames=0
-			if timer_seconds==60 then
-				timer_seconds=0
-				timer_minutes+=1
-			end
 	end
 
 	if mode=="game" and #creatures==0 then
@@ -533,9 +527,9 @@ function lives_check()
 			new_hs=true
 			highscore=score
 		end
-		if timer_minutes*60+timer_seconds>hightime then
+		if timer_seconds>hightime then
 			new_ht=true
-			hightime=timer_minutes*60+timer_seconds
+			hightime=timer_seconds
 		end
 		lockout=t+30
 		sfx(-1)
@@ -647,7 +641,11 @@ function draw_start()
 	cls(3)
 	draw_graveyard()
 	center_print("creature kills!",64,40,8)
-	center_print("press ❎ to start",64,80,blink())
+	center_print("high score:",64,56, 8)
+	center_print(make_score(highscore),64,64, 8)
+	center_print("high time:",64,72, 8)
+	center_print(format_time(hightime),64,80,8)
+	center_print("press ❎ to start",64,96,blink())
 end
 
 --draws game over screen - called when mode is set to "over"
@@ -657,17 +655,21 @@ function draw_over()
 	center_print("score:"..make_score(score),64,42, blink())
 
 	if new_hs==true then
-		center_print("new high score!",64,49,10)
+		local c=7
+		if t%4<2 then
+			c=10
+		end
+		center_print("new high score!",64,49,c)
 	end
 
-	if timer_seconds<10 then
-		center_print(timer_minutes..":0"..timer_seconds,64,59,blink())
-	else
-		center_print(timer_minutes..":"..timer_seconds,64,59,blink())
-	end
+	center_print(format_time(timer_seconds),64,59,blink())
 
 	if new_ht==true then
-		center_print("new high time!",64,66,10)
+		local c=7
+		if t%4<2 then
+			c=10
+		end
+		center_print("new high time!",64,66,c)
 	end
 
 	center_print("press ❎ to continue",64,76,blink())
@@ -681,17 +683,21 @@ function draw_win()
 	center_print("score:"..make_score(score),64,42,blink())
 
 	if new_hs==true then
-		center_print("new high score!",64,49,10)
+		local c=7
+		if t%4<2 then
+			c=10
+		end
+		center_print("new high score!",64,49,c)
 	end
 
-	if timer_seconds<10 then
-		center_print(timer_minutes..":0"..timer_seconds,64,59,blink())
-	else
-		center_print(timer_minutes..":"..timer_seconds,64,59,blink())
-	end
+	center_print(format_time(timer_seconds),64,59,blink())
 
 	if new_ht==true then
-		center_print("new high time!",64,66,10)
+		local c=7
+		if t%4<2 then
+			c=10
+		end
+		center_print("new high time!",64,66,c)
 	end
 
 	center_print("press ❎ to continue",64,76,blink())
@@ -705,11 +711,14 @@ function draw_wavetext()
 	else
 		center_print("wave "..wave.." of "..lastwave-1,64,40,blink())
 	end
-	if timer_seconds<10 then
-		center_print(timer_minutes..":0"..timer_seconds,64,49,blink())
-	else
-		center_print(timer_minutes..":"..timer_seconds,64,49,blink())
-	end	
+	center_print(format_time(timer_seconds),64,49,blink())
+end
+
+--formats a number of seconds as m:ss
+function format_time(total_seconds)
+	local m=flr(total_seconds/60)
+	local s=flr(total_seconds%60)
+	return m..":"..sub("0"..s,-2)
 end
 
 --draws background assets
@@ -903,7 +912,6 @@ function start_game()
 	lastwave=11
 	timer_frames=0
 	timer_seconds=0
-	timer_minutes=0
 	
 	next_wave()
 
@@ -954,6 +962,9 @@ function start_game()
  	t=0
 
  	floater_timeout=60
+
+	new_hs=false
+	new_ht=false
 end
 
 --removes transparency from black(0) and adds to pink(14) instead
@@ -1458,13 +1469,13 @@ function next_wave()
 
 	if wave>11 then
 		mode="win"
-		if highscore>score then
+		if score>highscore then
 			new_hs=true
 			highscore=score
 		end
-		if timer_minutes*60+timer_seconds>hightime then
+		if timer_seconds>hightime then
 			new_ht=true
-			hightime=timer_minutes*60+timer_seconds
+			hightime=timer_seconds
 		end
 		lockout=t+30
 		win_music_pending=true
