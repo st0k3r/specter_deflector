@@ -17,11 +17,12 @@ wave_data=split([[
 
 --default functions
 function _init()
+	cartdata("st0k3r")
+	highscore=dget(0)
+	hightime=dget(1)
 	mode="start"
 	t=0
 	shake=0
-	highscore=0
-	hightime=0
 	music(8)
 	set_transparency()
 	randpos()
@@ -378,6 +379,8 @@ function ghost_hit()
 	shake=10
 	if lives>=1 then
 		sfx(1)
+		ghost.x=60
+		ghost.y=90
 	end
 end
 
@@ -387,10 +390,12 @@ function end_game(m)
 	if score>highscore then
 		new_hs=true
 		highscore=score
+		dset(0, score)
 	end
 	if timer_seconds>hightime then
 		new_ht=true
 		hightime=timer_seconds
+		dset(1, timer_seconds)
 	end
 	lockout=t+30
 end
@@ -547,10 +552,14 @@ function draw_start()
 	cls(3)
 	draw_graveyard()
 	center_print("creature kills!",64,40,8)
-	center_print("high score:",64,56,8)
-	center_print(make_score(highscore),64,64,8)
-	center_print("high time:",64,72,8)
-	center_print(format_time(hightime),64,80,8)
+	if highscore>0 then
+		center_print("high score:",64,56,8)
+		center_print(make_score(highscore),64,64,8)
+	end
+	if hightime>0 then
+		center_print("high time:",64,72,8)
+		center_print(format_time(hightime),64,80,8)
+	end
 	center_print("press ❎ to start",64,96,blink())
 end
 
@@ -603,7 +612,7 @@ function start_game()
 
 	next_wave()
 
-	ghost=makespr{spr=2,x=64,y=64}
+	ghost=makespr{spr=2,x=60,y=90}
 	controlled_timer,bullet_timer,muzzle,score,bombs,next_fire,invul=0,0,0,0,0,0,0
 	max_lives=4
 	lives=4
