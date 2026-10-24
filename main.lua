@@ -380,7 +380,7 @@ function ghost_hit()
 	if lives>=1 then
 		sfx(1)
 		ghost.x=60
-		ghost.y=90
+		ghost.y=100
 	end
 end
 
