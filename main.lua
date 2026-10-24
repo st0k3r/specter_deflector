@@ -1,41 +1,19 @@
 --default functions
 function _init()
-	cls(0)
-	
 	mode="start"
-	start_screen()
-	
-	blinkt=0
-	
 	t=0
-	
-	music(8)
-	
-	set_transparency()
-	grave_sprites={10,11,12}
-	grave_types={}
-	sprtable=randpos()
-	graveyard_gen()
-	
-	lockout=0
-	win_music_pending=false
-
 	shake=0
-	
-	pickups={}
-	
-	floats={}
-
 	highscore=0
 	hightime=0
-	--debug="debug"
+	bombs_sprites={52,53,54}
+	music(8)
+	set_transparency()
+	randpos()
 end
 
 --gameplay
 function _update()
-	blinkt=blinkt+1
-	
-	t=t+1
+	t+=1
 	
 	if mode == "game" then
 		update_game()
@@ -65,8 +43,6 @@ function _draw()
 	elseif mode == "win" then
 		draw_win()
 	end
-
-	--print(debug, 2,8)
 end
 
 --update functions
@@ -105,35 +81,31 @@ end
 
 --start state - called when mode is set to "start"
 function update_start()
-	if btnp(5)==false and btnp(4)==false then
-		btn_released=true
-	end
-	
-	if btn_released==true then
-		if btnp(4) or btnp(5) then
-			start_game()
-			btn_released=false
-		end
+	if pressed() then
+		start_game()
 	end
 	animate_background()
 end
 
---over state - called when mode is set to "over"
-function update_over()
-	if t<lockout then
-		return
-	end
-	
-	if btnp(4)==false and btnp(5) then
+--true once z/x is pressed after both buttons have been released
+function pressed()
+	if not (btn(4) or btn(5)) then
 		btn_released=true
 	end
-	
-	if btn_released==true then
-		if btnp(4) or btnp(5) then
-			start_screen()
+	if btn_released and (btnp(4) or btnp(5)) then
+		btn_released=false
+		return true
+	end
+end
+
+--over/win states - returns to start screen after lockout
+function update_over()
+	if t>=lockout and pressed() then
+		if mode=="over" or win_music_pending then
 			music(8)
-			btn_released=false
 		end
+		mode="start"
+		win_music_pending=false
 	end
 end
 
@@ -149,27 +121,11 @@ end
 
 --win state - called when mode is set to "win"
 function update_win()
-	if win_music_pending then
-		if not sfx_playing(19) then
-			music(8)
-			win_music_pending=false
-		end
+	if win_music_pending and not sfx_playing(19) then
+		music(8)
+		win_music_pending=false
 	end
-
-	if t<lockout then
-		return
-	end
-	
-	if btnp(4)==false and btn(5)==false then
-		btn_released=true
-	end
-	
-	if btn_released then
-		if btnp(4) or btnp(5) then
-			start_screen()
-			btn_released=false
-		end
-	end
+	update_over()
 end
 
 --sets ghost speed and sprite
@@ -194,7 +150,6 @@ function set_ghost_params()
 	end
 
 	ghost.mode=0
-	ghost.bomb=false
 end
 
 --controls setup - adjusts sprite and speed based on button input
@@ -427,7 +382,8 @@ function collision_bullet()
 				end
 
 				if creature.hp<=0 then
-					kill_creature(creature)	
+					kill_creature(creature)
+					break
 				end
 			end
 		end
@@ -461,7 +417,8 @@ function collision_ghost()
 						sfx(1)
 					end
 					invul=60
-				end	
+					return
+				end
 			end
 		end
 	else
@@ -503,7 +460,8 @@ function collision_creature_bullet()
 					if lives>=1 then
 						sfx(1)
 					end
-				end	
+					return
+				end
 			end
 		end
 	end
@@ -571,11 +529,10 @@ end
 
 --makes background assets move
 function animate_background()
-	for i=1,#sprtable do
-		sprtable[i].y=sprtable[i].y+1
-		
-		if sprtable[i].y>128 do
-			sprtable[i].y=sprtable[i].y-128
+	for g in all(sprtable) do
+		g.y+=1
+		if g.y>128 then
+			g.y-=128
 		end
 	end
 end
@@ -723,8 +680,8 @@ end
 
 --draws background assets
 function draw_graveyard()
-	for i=1,#sprtable do
- 	spr(grave_types[i],sprtable[i].x,sprtable[i].y)
+	for g in all(sprtable) do
+		spr(g.s,g.x,g.y)
 	end
 end
 
@@ -897,16 +854,8 @@ end
 
 --initialization
 
---called to enter "start" state
-function start_screen()
-	mode="start"
-end
-
 --called to start gameplay
 function start_game()
-	set_transparency()
-	
-	music(-1)
 	music(6)
 	wave=0
 	lastwave=11
@@ -931,20 +880,14 @@ function start_game()
  	max_lives=4
  	lives=4
  	bombs=0
-	
- 	bombs_sprites={52,53,54}
+
  	bombs_sprite=rnd(bombs_sprites)
 
- 	freq=60
- 	firefreq=20
 	next_fire=0
 
  	invul=0
 
- 	grave_sprites={10,11,12}
- 	grave_types={}
- 	sprtable=randpos()
- 	graveyard_gen()
+ 	randpos()
 
  	bullets={}
  	creature_bullets={}
@@ -973,44 +916,22 @@ function set_transparency()
 	palt(14, true)
 end
 
---generates random positions for background graves
+--generates 40 background graves at random grid cells with random sprites
 function randpos()
-  local ids={}
-  for i=0,8*8 do
-    add(ids,i)
-  end
-
-  local picknum=40
-  local result={}
-
-  for i=1,picknum do
-    local id=del(ids,rnd(ids))
-    add(result,id)
-  end
-
-  for i,v in pairs(result) do
-    result[i]={
-      x=v%8*16,y=v\8*16
-    }
-  end
-  
-  return result
-end
-
---selects random grave sprites to appear
-function graveyard_gen()
-	for i=1,#sprtable do
-		grave_types[i]=rnd(grave_sprites)
+	local ids={}
+	for i=0,63 do
+		add(ids,i)
+	end
+	sprtable={}
+	for i=1,40 do
+		local v=del(ids,rnd(ids))
+		add(sprtable,{x=v%8*16,y=v\8*16,s=rnd(split"10,11,12")})
 	end
 end
 
 --makes start/over screen text blink red
 function blink()
-	local anim={0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8}
-	if blinkt>#anim then
-		blinkt=0
-	end
-	return anim[blinkt]
+	return t%36<12 and 0 or 8
 end
 
 --draws outline for sprites to make them standout - used for pickups
@@ -1091,8 +1012,6 @@ function spawn_creature(creature_type,x,y,wait)
  
  	creature.posx=x
  	creature.posy=y
- 
-	creature.direction=0
  
  	creature.anispeed=0.5
  
@@ -1769,7 +1688,6 @@ function pickup_logic(pickup)
 	make_small_wave(pickup.x+4,pickup.y+4,14)
 
 	if bombs>=10 then
-		bombs=0
 		if lives<max_lives then
 			lives+=1
 			sfx(12)
@@ -1779,6 +1697,7 @@ function pickup_logic(pickup)
 			show_float("unleashed!",pickup.x+4,pickup.y+4)
 			ghost_bomb()
 		end
+		bombs=0
 	else
 		sfx(11)			
 	end
@@ -1877,13 +1796,7 @@ function fire(creature,ang,spd)
 	creature_bullet.w=5
 	creature_bullet.h=5
 	creature_bullet.bulletmode=true
-	
-	creature_bullet.frank_head=false
-	
-	if creature.type==1 and creature.has_fired==false then
-		creature_bullet.frank_head=true
-	end
-	
+
 	add(creature_bullets,creature_bullet)
 	
 	return creature_bullet
