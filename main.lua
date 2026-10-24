@@ -23,6 +23,7 @@ function _init()
 	mode="start"
 	t=0
 	shake=0
+	flash=0
 	music(8)
 	set_transparency()
 	randpos()
@@ -349,6 +350,7 @@ function collision_creature_bullet()
 					lives-=2
 					txt="headshot!"
 				elseif s>131 and s<135 then
+					lives-=1
 					controlled_timer=t+60
 					invul=0
 					txt="controlled!"
@@ -377,10 +379,12 @@ end
 function ghost_hit()
 	spawn_explosion(ghost.x+4,ghost.y+4,true)
 	shake=10
+	flash=2
 	if lives>=1 then
 		sfx(1)
 		ghost.x=60
 		ghost.y=100
+
 	end
 end
 
@@ -439,7 +443,12 @@ end
 
 --draws game - called when mode is set to "game"
 function draw_game()
-	cls(3)
+	if flash>0 then
+		flash-=1
+		cls(2)
+	else
+		cls(3)
+	end
 	draw_graveyard()
 
 	--floating text messages, deleted after timeout period
@@ -1104,6 +1113,7 @@ function ghost_bomb()
 	shake=5
 	muzzle=5
 	invul=30
+	flash=2
 end
 
 --boss bounces side to side for 8 seconds, then switches to mission nxt
@@ -1191,6 +1201,7 @@ function boss_5(c)
 		show_float("banished!",c.x+16,c.y+6)
 		spawn_boss_explosion(c.x+16,c.y+12)
 		shake=15
+		flash=2
 		creatures={}
 		sfx(19)
 	end
