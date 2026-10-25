@@ -1,5 +1,5 @@
 --default sprite fields - read through the metatable until overwritten
-sprmeta={__index={x=0,y=0,sx=0,sy=0,flash=0,shake=0,frame=1,width=1,height=1,w=8,h=8}}
+sprmeta={__index={x=0,y=0,sx=0,sy=0,flash=0,shake=0,frame=1,width=1,height=1,w=8,h=8,fire_acc=0}}
 
 --wave layouts: 4 rows of 10, 0=empty, 1-5=creature type
 wave_data=split([[
@@ -85,10 +85,16 @@ function update_game()
 	end
 	ghost.y=mid(0,ghost.y,120)
 
+	--resumes music after the boss death sfx in endless terror
+	if music_pending and not sfx_playing(19) then
+		music(6)
+		music_pending=false
+	end
+
 	if mode=="game" then
 		if t>next_fire then
 			pick_fire()
-			next_fire=t+firefreq+rnd(firefreq)
+			next_fire=t+(firefreq+rnd(firefreq))/difficulty
 		end
 		if t%freq==0 then
 			pick_attack()
@@ -128,9 +134,13 @@ function pressed()
 	end
 end
 
---over/win states - returns to start screen after lockout
+--over/win states - returns to start screen after lockout, z on win screen starts endless terror
 function update_over()
 	if t>=lockout and pressed() then
+		if mode=="win" and btnp(4) then
+			start_endless()
+			return
+		end
 		if mode=="over" or win_music_pending then
 			music(8)
 		end
@@ -410,6 +420,7 @@ function end_game(m)
 		dset(1, timer_seconds)
 	end
 	lockout=t+30
+	end_t=t
 end
 
 --makes background assets move
@@ -604,12 +615,20 @@ function draw_end()
 	if new_ht then
 		center_print("new high time!",64,66,c)
 	end
-	center_print("press ❎ to continue",64,76,blink())
+	if mode=="win" then
+		center_print("🅾️ endless terror",64,76,blink())
+		center_print("❎ title screen",64,84,blink())
+	else
+		center_print("press ❎ to continue",64,76,blink())
+	end
 end
 
 --draws wave text shown at beginning of each wave
 function draw_wavetext()
 	draw_game()
+	if endless then
+		center_print("endless terror "..level,64,31,8)
+	end
 	center_print(wave==11 and "boss wave" or "wave "..wave.." of 10",64,40,blink())
 	center_print(format_time(timer_seconds),64,49,blink())
 end
@@ -635,13 +654,15 @@ end
 --called to start gameplay
 function start_game()
 	music(6)
-	wave=0
+	wave=10
 	timer_seconds=0
+	endless=false
+	level=0
 
 	next_wave()
 
 	ghost=makespr{spr=2,x=60,y=90}
-	controlled_timer,bullet_timer,muzzle,score,bombs,next_fire,invul=0,0,0,0,0,0,0
+	controlled_timer,bullet_timer,muzzle,score,bombs,next_fire,invul=0,0,0,500,8,0,0
 	max_lives=4
 	lives=4
 
@@ -655,6 +676,19 @@ function start_game()
 	floater_timeout=60
 	new_hs=false
 	new_ht=false
+end
+
+--continues from the win screen into endless terror
+function start_endless()
+	endless=true
+	t=end_t
+	win_music_pending=false
+	music_pending=true
+	bullets,creature_bullets,pickups={},{},{}
+	ghost.x=60
+	ghost.y=90
+	wave=0
+	next_wave()
 end
 
 --removes transparency from black(0) and adds to pink(14) instead
@@ -719,7 +753,7 @@ function spawn_creature(ty,x,y,wait)
 	local c=makespr{
 		x=x*2-64,y=y-66,posx=x,posy=y,
 		type=ty,wait=wait,mission="fly_in",
-		hp=d[1],anispeed=d[2],
+		hp=ceil(d[1]*difficulty),anispeed=d[2],
 		width=d[3],height=d[4],w=d[3]*8,h=d[4]*8,
 		score=d[5],animation={unpack(d,6)}
 	}
@@ -791,11 +825,12 @@ end
 --waves and enemies
 
 --spawns creatures for the current wave from wave_data
+--timings follow the wave number, layout follows wave_idx (random in endless terror)
 function spawn_wave()
 	local f=split"60,20,60,20,60,20,50,15,50,15,50,15,40,10,40,10,30,10,30,10,60,20"
 	freq=f[wave*2-1]
 	firefreq=f[wave*2]
-	local lvl=wave_data[wave]
+	local lvl=wave_data[wave_idx]
 	for i=0,39 do
 		local ty=ord(lvl,i+i\10+1)-48
 		if ty>0 then
@@ -811,20 +846,37 @@ function spawn_wave()
 end
 
 --increments wave and checks if game has completed
+--each boss defeat raises the level, scaling creature hp and fire rate
 function next_wave()
 	wave+=1
 	sfx_check=0
 	is_holding=false
 
 	if wave>11 then
-		end_game("win")
-		win_music_pending=true
-	else
-		mode="wavetext"
-		wavetime=wave==1 and 110 or 80
-		if wave>1 and wave!=11 then
-			sfx(6)
+		level+=1
+		wave=1
+		if not endless then
+			end_game("win")
+			win_music_pending=true
+			return
 		end
+		music_pending=true
+	end
+	difficulty=1+level*0.15
+
+	--endless terror uses each layout once per cycle before the boss
+	wave_idx=wave
+	if endless and wave<11 then
+		if wave==1 then
+			bag=split"1,2,3,4,5,6,7,8,9,10"
+		end
+		wave_idx=del(bag,rnd(bag))
+	end
+
+	mode="wavetext"
+	wavetime=wave==1 and 110 or 80
+	if wave>1 and wave!=11 then
+		sfx(6)
 	end
 end
 
@@ -913,7 +965,7 @@ function attack(c)
 		c.sy=0.3
 		if c.y>110 then
 			c.sy=1
-		elseif t%30==0 then
+		elseif ready(c,30) then
 			spreadshot(c,8,1.3,rnd())
 		end
 	end
@@ -1056,6 +1108,15 @@ function animate(o)
 	o.spr=o.animation[flr(o.frame)]
 end
 
+--true roughly every n frames, sooner as difficulty rises
+function ready(c,n)
+	c.fire_acc+=difficulty
+	if c.fire_acc>=n then
+		c.fire_acc-=n
+		return true
+	end
+end
+
 --bullets
 
 --creature shoots a projectile at angle ang
@@ -1168,7 +1229,7 @@ end
 --boss mission 1 - bounce and rapid fire
 function boss_1(c)
 	boss_bounce(c,2,"boss_2")
-	if t%30>3 and t%3==0 then
+	if t%30>3 and ready(c,3) then
 		fire(c,0,2.25)
 	end
 	move(c)
@@ -1177,7 +1238,7 @@ end
 --boss mission 2 - sweep and aimed fire
 function boss_2(c)
 	boss_sweep(c,-1,"boss_3")
-	if t%15==0 then
+	if ready(c,15) then
 		aimedfire(c,2)
 	end
 	move(c)
@@ -1186,7 +1247,7 @@ end
 --boss mission 3 - slow bounce and spreadshot
 function boss_3(c)
 	boss_bounce(c,0.5,"boss_4")
-	if t%10==0 then
+	if ready(c,10) then
 		spreadshot(c,8,2,time())
 	end
 	move(c)
@@ -1195,7 +1256,7 @@ end
 --boss mission 4 - sweep firing toward the edge it travels along
 function boss_4(c)
 	boss_sweep(c,1,"boss_1")
-	if t%12==0 then
+	if ready(c,12) then
 		fire(c,(c.subphase-1)/4,2)
 	end
 	move(c)
