@@ -91,7 +91,11 @@ function update_game()
 		end
 	end
 
-	animate_background()
+	if mode=="wavetext" then
+		animate_background(2)
+	else
+		animate_background(1)
+	end
 
 	timer_seconds=t\30
 
@@ -405,9 +409,13 @@ function end_game(m)
 end
 
 --makes background assets move
-function animate_background()
+function animate_background(spd)
+	if spd==nil then
+		spd=1
+	end
+
 	for g in all(sprtable) do
-		g.y+=1
+		g.y+=spd*spd
 		if g.y>128 then
 			g.y-=128
 		end
@@ -560,7 +568,7 @@ end
 function draw_start()
 	cls(3)
 	draw_graveyard()
-	center_print("creature kills!",64,40,8)
+	spr(135, 27, 20, 9, 4)
 	if highscore>0 then
 		center_print("high score:",64,56,8)
 		center_print(make_score(highscore),64,64,8)

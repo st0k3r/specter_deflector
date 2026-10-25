@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#boss -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Specter Deflector Field Guide</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="stylesheet" href="./Specter Deflector Field Guide_files/css2">
+<style>
+/* Layout: one narrow reading column on a night-graveyard ground; each section is a ledger of
+   sprite + facts, with in-game text shown in the cart's own blinking red/white. Single dark look by choice. */
+:root {
+  color-scheme: dark;
+  --night: #0c1c15;      /* page ground: moss after dark */
+  --plot: #12271d;       /* table surface */
+  --plot-2: #183226;     /* alternate rows / header */
+  --rule: #2a4a3c;
+  --fg: #fff1e8;         /* PICO-8 white */
+  --muted: #a7bcae;
+  --grass: #008751;      /* PICO-8 dark green: in-game background behind sprites */
+  --candy: #ff77a8;      /* PICO-8 pink: accent */
+  --blood: #ff004d;      /* PICO-8 red: floater text, damage */
+  --pumpkin: #ffa300;
+  --slime: #00e436;
+  --font-display: "Silkscreen", "Courier New", monospace;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-game: "VT323", "Consolas", monospace;
+}
+body {
+  background: var(--night);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+.page {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2rem 4rem;
+  display: grid;
+  gap: 3.25rem;
+}
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; text-wrap: balance; margin: 0; line-height: 1.15; }
+h2 { font-size: 1.5rem; color: var(--candy); letter-spacing: 0.02em; }
+h3 { font-size: 1.05rem; color: var(--fg); letter-spacing: 0.03em; }
+p { margin: 0; max-width: 65ch; }
+.muted { color: var(--muted); }
+section { display: grid; gap: 1rem; min-width: 0; }
+.eyebrow { font-family: var(--font-display); font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+/* hero */
+.hero { display: grid; gap: 1.25rem; justify-items: center; text-align: center; }
+.screen {
+  width: 100%; max-width: 512px; aspect-ratio: 2 / 1;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  border: 4px solid var(--plot-2); border-radius: 6px; background: var(--grass);
+}
+.hero p { color: var(--muted); }
+.hero h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.toc { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; justify-content: center; font-family: var(--font-display); font-size: 0.8rem; }
+.toc a { color: var(--fg); text-decoration: none; border-bottom: 2px solid var(--rule); padding-bottom: 2px; }
+.toc a:hover, .toc a:focus-visible { border-color: var(--candy); color: var(--candy); outline: none; }
+
+/* sprites */
+canvas.spr { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+.tile { display: inline-flex; align-items: center; justify-content: center; background: var(--grass); border-radius: 4px; padding: 6px; flex: none; }
+.tiles { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.inline-spr { display: inline-block; vertical-align: -0.35em; background: var(--grass); border-radius: 3px; padding: 2px; }
+
+/* tables */
+.table-wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 6px; background: var(--plot); }
+table { border-collapse: collapse; width: 100%; min-width: 40rem; font-size: 0.97rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--rule); }
+thead th { background: var(--plot-2); font-family: var(--font-display); font-weight: 400; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+tbody tr:last-child td { border-bottom: 0; }
+td.sprite { width: 1%; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td strong { font-weight: 700; }
+.name { font-family: var(--font-display); font-size: 0.95rem; white-space: nowrap; }
+.key {
+  display: inline-block; min-width: 1.9em; padding: 0.05em 0.45em; text-align: center;
+  font-family: var(--font-display); font-size: 0.8rem; color: var(--night); background: var(--fg);
+  border-radius: 4px; box-shadow: 0 3px 0 var(--muted); margin-right: 0.15em;
+}
+.dmg { font-family: var(--font-display); color: var(--blood); white-space: nowrap; }
+.pill { display: inline-block; font-family: var(--font-display); font-size: 0.7rem; letter-spacing: 0.06em; padding: 0.1em 0.5em; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.pill.good { color: var(--slime); }
+.pill.bad { color: var(--blood); }
+.pill.warn { color: var(--pumpkin); }
+.pts { font-family: var(--font-game); font-size: 1.35rem; line-height: 1; color: var(--fg); }
+
+/* floater text: blinks red/white every 2 frames like the cart */
+.float { font-family: var(--font-game); font-size: 1.6rem; line-height: 1; white-space: nowrap; color: var(--blood); animation: blink 0.133s steps(1) infinite; }
+@keyframes blink { 50% { color: var(--fg); } }
+
+/* hud callout */
+.hud { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+.hud > div { display: flex; gap: 0.85rem; align-items: flex-start; min-width: 0; }
+.hud p { font-size: 0.97rem; }
+
+.boss { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+.boss > div { min-width: 0; flex: 1 1 18rem; display: grid; gap: 0.5rem; }
+
+.tips { display: grid; gap: 0.75rem; padding: 0; margin: 0; list-style: none; max-width: 65ch; }
+.tips li { display: grid; grid-template-columns: auto 1fr; gap: 0.75rem; align-items: start; }
+.tips li::before { content: "+"; font-family: var(--font-display); color: var(--candy); }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+
+@media (prefers-reduced-motion: reduce) { .float { animation: none; } }
+</style>
+
+<script id="gfx" type="text/plain">
+00000000eee777eeeee777eeee777eeeeee777eeeee777eeeee7beeeeee777eeeebbbbeeeeeeebeeeeddd55eeeedd5eeeedddd5eeeeeeeeeeee00eeeeee00eee
+00000000ee77777eee77777ee77777eeee70707eee77777eeebb7beeee77777eebbb7bbeeeeebeeeeddddd5eeeedd5eeed5dd5d5eee00eeee886688ee886688e
+00700700e707077ee770707ee770707ee777777ee777777eeebb7beee770707ebbbbb7bbeea9a9eee55d5d5eedddddd5edddddd5e886688eee8778eeee8778ee
+00077000e777777ee777777ee777777ee777777ee770707eeebbbbeee777777ebbbbbbbbea09909eeddddd5eedddddd5ed5dd5d5ee8778eee608806ee608806e
+00077000e777007ee700777ee700777e77777776e777777eeebbbbeee700777ebbb7bbbba9999999ed55dd5eeeedd5eeeedddd5ee608806ee800008ee800008e
+007007006777077ee7707776e77077766777776ee777777eeeebbbeee7707776bb7bbbbb90000004eddddd5eeeedd5eeeeedd5eee800008eee8008eeee8008ee
+00000000e677707ee707776ee707776ee677776ee777777eeeebbeeee707776eebbbbbbe90999904e5d55d5eeedddd5eedddddd5ee8008eeee5005ee00500500
+00000000ee677777e777776e777776eeee6666ee66666666eeeebeeee777776eeebbbbeee994444e444444444444444444444444ee5005eee000000ee000000e
+eeeeeeeeeee00eeeeee00eeeeeeeeeeeeeeeeeeeeeeeeeeeeee0eeeeeee0eeeeeee0eeeeeee0eeeeee0000eeee0000eeeeb000eeeeb000eeeee777eeeee777ee
+eee00eeee8866bbee8866bbeeeeeeeeeeeeeeeee11eeee11eee00eeeeee00eeeeee00eeeeee00eeee60bbb6ee60bbb6ee60bbb6ee60bbb6eee7eee7eee7eee7e
+e8866bbeeeb778eeeeb778eee11ee11ee11ee11ee11ee11ee000000ee000000eeb0000beeb0000beeebbbbeeeebbbbeeeebbbbeeeebbbbeee70e0e7ee7e0e07e
+eeb778eee608806ee608806e111d5111111ee111e11ee11eeeeffeeeeeeffeeeeeeffebeeeeffebee00bbb0ee00bbb0eeb0bbb0eeb0bbb0ee7eeee7ee7eeee7e
+e608806eeb00008eeb00008e11e11e111e1d51e1ee1d51eeee000eeeee000eeeeeb00eeeeeb00eeee002200ee0b2200be002200ee0b2200be7ee007ee700ee7e
+eb00008eee80b8eeee80b8ee1eeeeee11ee11ee1eee11eee6e0000eeee0000ee6e00b0eeee00b0eeeb0220beee0220eeeb02b0beee02b0ee67ee0e7ee7e0ee76
+ee80b8eeeeb005ee00b00500eeeeeeeeeeeeeeeeeeeeeeeee60f44f4e60f44f4e60f44fbe60f44fbee5555eeee5555eeee555beeee555beee67ee07ee70eee6e
+eeb005eee000000ee000000eeeeeeeeeeeeeeeeeeeeeeeeeee5ee5ee6e5ee5eeee5ee5eb6e5ee5ebee5ee5eeee5ee5eeeebee5eeeebee5eeee677777e777776e
+ee777eeeeee777eeeee777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee2e2eeeeaaeeeeeeaaeeeeee77eeeee0000eeeeeeeeeee
+e7eee7eeee70e07eee7eee7eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb1eeee1beeeeeeeeeeeeeeeeee2e2e2eea99aeeee9aa9eeee7aa7eee60bbb6eeeeeeeeee
+e7e0e07ee7eeee7ee7eeee7eeeeeeeeeeeeeeeeee11ee11ee11ee11ee11ee11eeeeeeeeeeeeeeeeeeeee2eeea97a9aeeaa77aaee7a77a7eeebbbbeeeeeeeeeee
+e7eeee7ee7eeee7ee7e0e07eeeeeeeeeeeeeeeee1b1d51b11b1eeb11eb1eeb1eee77e77eee77e77eee77277ea9aa9aeeaa77aaee7a77a7eeebbbbeeee00eee0e
+e700ee7e7eeeee76e7eeee7eeeeeeeeeeeeeeeee11e1be111e1d51e1ee1d51eeeee7e7eeeee727eeeee727eeea99aeeee9aa9eeee7aa7eeeeeeeeeeee002200e
+e7e0ee766eeeee6ee7eeee7eeeeeeeeeeeeeeeeebeeeeeebbee1beebeee1beeeee7eee7eee72227eee72227eeeaaeeeeeeaaeeeeee77eeeeeeeeeeeeeb0220be
+e70eee6ee6eeee6ee7eeee7eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee72227eee72227eee72227eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5555ee
+777776eeee6666ee66666666eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee77777eee77777eee77777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee5ee5ee
+eeeeeeeeeeeeeeeeeeeeeeeeeb000eeeeeeeeeeeeeeeeeeeeeeeeeeeeee4eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee66eee
+eeeeeeeeeeeeeeeeeeeeeeee60bbb6eeeeccceeeeeeeeeeeee144eeeeee4eeeeeeeeeeeeeeeeeeeee4eeeeeeeeeeee4eeeeee6ee4eeeeeeeeeeeeee4ee6ee6ee
+eeeeeeeeeeeeeeeeeeeeeeeeebbbbeeeeccc7cee8e888e8eee1144eeeee4eeeeee9eeeeeeeeee9eeee4eeeeeeeeee4eeeeee4e6ee4eeeeeeeeeeee4eeee4eeee
+e00eee0eeb0eee0eeb0eee0eebbbbeeeecc7cceee87778eeee1771eeeee4eeeeeee4eeeeeeee4eeeeee4eeeeeeee4eeeeee4ee6eee4eeeeeee6ee4eeeeee4eee
+e0b2200be002200ee0b2200beeeeeeeeeeccceee8e888e8eee1771eeeee4eeeeeeee4eeeeee4eeeeeeee4eeeeee4eeeeee4ee6eeeee4eeeee6ee4eeeeeeee4ee
+ee0220eeeb02b0beee02b0eeeeeeeeeeeee7eeeeeeeeeeeeee1771eeee666eeeeeeee4eeee4eeeeeeeeee9eeee9eeeeee4eeeeeeeeee4eeee6e4eeeeeeeeee4e
+ee5555eeee555beeee555beeeeeeeeeeeee7eeeeeeeeeeeeee1111eee6e6e6eeeeeeee4ee4eeeeeeeeeeeeeeeeeeeeee4eeeeeeeee6ee6eeee6eeeeeeeeeeee4
+ee5ee5eeeebee5eeeebee5eeeeeeeeeeeee7eeeeeeeeeeeeeeeeeeeee6e6e6eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee66eeeeeeeeeeeeeeeeeee
+eeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeee
+eeee7eeeeee7eeeeeeee7eeeeee7eeeeeeee7eeeeee7eeeeeeee7eeeeee7eeeeeeee7eeeeee7eeeeeeee7eeeeee7eeeeeeee7eeeeee7eeeeeeee7eeeeee7eeee
+eee7eebbbbee7eeeeee7eebbbbee7eeeeee7eebbbbee7eeeeee7eebbbbee7eeeeee7eebbbbee7eeeeee7eebbbbee7eeeeee7eebbbbee7eeeeee7eebbbbee7eee
+ee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7ee
+ee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7ee
+ee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7ee
+ee7eeeb00beee7eeee7eeeb00beee7eeee7eeeb00beee7eeee7bbeb00bebb7eeee7bbeb00bebb7eeee7bbeb00bebb7eeee7bbeb00bebb7eeee7bbeb00bebb7ee
+ee7bbeebbeebb7eeee7bbeebbeebb7eeee7bbeebbeebb7eeee7eeeebbeeee7eeee7eeeebbeeee7eeee7eeeebbeeee7eeee7eeeebbeeee7eeee7eeeebbeeee7ee
+e55555555555555ee55555555555555ee55555555555555ee55555555555555ee55555555555555ee55555555555555ee55555555555555ee55555555555555e
+5666666cc66666655666666cc66666655666666cc66666655666666cc66666655666666cc66666655666666cc66666655666666cc66666655666666cc6666665
+6c6c6c6cc6c6c6c66c6c6c6cc6c6c6c66c6c6c6cc6c6c6c66c6c6c6cc6c6c6c66c6c6c6cc6c6c6c66c6c6c6cc6c6c6c66c6c6c6cc6c6c6c66c6c6c6cc6c6c6c6
+6666666cc66666666666666cc66666666666666cc66666666666666cc66666666666666cc66666666666666cc66666666666666cc66666666666666cc6666666
+55555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555
+e56566655666565ee56566655666565ee56566655666565ee56566655666565ee56566655666565ee56566655666565ee56566655666565ee56566655666565e
+ee565665566565eeee565665566565eeee565665566565eeee565665566565eeee565665566565eeee565665566565eeee565665566565eeee565665566565ee
+eee99aaaaaa99eeeeee999aaaaaa9eeeeee9999aaaaaaeeeeeea9999aaaaaeeeeeeaa9999aaaaeeeeeeeaa9999aaaeeeeeeeaaa9999aaeeeeeeeaaaa9999aeee
+eeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeeeeeeee777777eeeee
+eeee7eeeeee7eeeeeeee7eeeeeebeeeeeeee7eeeeeebeeeeeeee7eeeeeebeeeeeeee7eeeeeebeeeeeeee7eeeeeebeeeeeeee7eeeeeebeeeeeeee7eeeeeebeeee
+eee7eebbbbee7eeeeee7eebbbbeebeeeeee7eebbbbeebeeeeee7eebbbbeebeeeeee7eebbbbeebeeeeee7eebbbbeebeeeeee7eebbbbeebeeeeee7eebbbbeebeee
+ee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee7ee0bbbb0ee7ee
+ee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7eeee7ee00bb00ee7ee
+ee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7eeee7eebbbbbbee7ee
+ee7bbeb00bebb7eeee7eeeb00beee7eeee7eeeb00beee7eeee7eeeb00beee7eeee7bbeb00bebb7eeee7bbeb00bebb7eeee7bbeb00bebb7eeee7bbeb00bebb7ee
+ee7eeeebbeeee7eeee7bbeebbeebb7eeee7bbeebbeebb7eeee7bbeebbeebb7eeee7eeeebbeeee7eeee7eeeebbeeee7eeee7eeeebbeeee7eeee7eeeebbeeee7ee
+e55555555555555eeb5555555555555eeb5555555555555eeb5555555555555eeb5555555555555eeb5555555555555eeb5555555555555eeb5555555555555e
+5666666cc66666655b66b66cb66666655b66b66cb66666655b66b66cb66666655b66b66cb66666655b66b66cb66666655b66b66cb66666655b66b66cb6666665
+6c6c6c6cc6c6c6c66c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cb
+6666666cc6666666666666bcc66b6666666666bcc66b6666666666bcc66b6666666666bcc66b6666666666bcc66b6666666666bcc66b6666666666bcc66b6666
+5555555555555555b555555555555555b555555555555555b555555555555555b555555555555555b555555555555555b555555555555555b555555555555555
+e56566655666565eb56566655666565eb56566655666565eb56566655666565eb56566655666565eb56566655666565eb56566655666565eb56566655666565e
+ee565665566565eebe565665566565bebe565665566565bebe565665566565bebe565665566565bebe565665566565bebe565665566565bebe565665566565be
+eeeaaaaaa9999eeeeee99aaaaaa99ebeeee999aaaaaa9ebeeee9999aaaaaaebeeeea9999aaaaaebeeeeaa9999aaaaebeeeeaaa9999aaaebeeeeaaaa9999aaebe
+eeeee777777eeeeeeeeee777777eeeeeeeeeeeeeeeeeeeeeeee9e9eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+eeee7eeeeeebeeeeeeee7eeeeeebeeeeeeeeeeeeeeeeeeeeee9e9e9eeeee00000000000000000000000000000000000000000000000000000000000000eeeeee
+eee7eebbbbeebeeeeee7eebbbbeebeeeeeeeeeeeeeeeeeeeeeee9eeeeeee07777777077777770077777777007777777077777777077777777077777770ceeeee
+ee7ee0bbbb0ee7eeee7ee0bbbb0ee7eeee77e77eee77e77eee77977eeee0077777bb0777777700777777770077777770777777770777777770777777700eeeee
+ee7ee00bb00ee7eeee7ee00bb00ee7eeeee7e7eeeee797eeeee797eeeee07700000b0770000770770000000770000bb0000770000770000000770000770ceeee
+ee7eebbbbbbee7eeee7eebbbbbbee7eeee7eee7eee79997eee79997eeee07700000007700007707700000c0770ccccbccc0770cc07700000c0770000770ceeee
+ee7bbeb00bebb7eeee7bbeb00bebb7eeee79997eee79997eee79997eeee00777777007777777007777770c0770ceeeeeee0770ce07777770c0777777700ceeee
+ee7eeeebbeeee7eeee7eeeebbeeee7eeee77777eee77777eee77777eeeec0777777007777777007777770c0770ceeeeeee0770ce07777770c077777770cceeee
+eb5555555555555eeb5555555555555eeeeeeeeeeeeeeeeeeeececeeeeee0000007707700000007700000c0770ceeeeeee0770ce07700000c077000770ceeeee
+5b66b66cb66666655b66b66cb6666665eeeeeeeeeeeeeeeeeecececeeee0000000660660ccccc0660000000660000000ee0660ce0660000000660c06600eeeee
+6c6c6c6cb6c6c6cb6c6c6c6cb6c6c6cbeeeeeeeeeeeeeeeeeeeeceeeeee0666666600660ceeee0666666660066666660ce0660ce0666666660660c00660ceeee
+666666bcc66b6666666666bcc66b6666ee77e77eee77e77eee77c77eeee0666666600660ceeee0666666660066666660ce0660ce0666666660660000660ceeee
+b555555555555555b555555555555555eee7e7eeeee7c7eeeee7c7eeeee0000000000000ceeee0000000000000000000ce0000ce0000000000000000000ceeee
+b56566655666565eb56566655666565eee7eee7eee7ccc7eee7ccc7eeeecccccccccccccceeeeccccccccccccccccccccecccccecccccccccccccccccbbceeee
+be565665566565bebe565665566565beee7ccc7eee7ccc7eee7ccc7eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebeeeee
+eeeaaaaa9999aebeeeeaaaaaa9999ebeee77777eee77777eee77777eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+00000000000000000000000000000000000000000000000000000000eee0000000000000000000000000eee00000000000000000000000000000000000eeeeee
+00000000000000000000000000000000000000000000000000000000eee0aaaaa00aaaaaa0aaaaaa0aa02ee0aaaaaa00aaaaa0aaaaaa00aaaa00aaaaa02eeeee
+00000000000000000000000000000000000000000000000000000000eee0aaaaa00aaaaaa0aaaaaa0aa02ee0aaaaaa00aaaaa0aaaaaa00aaaa00aaaaa00eeeee
+00000000000000000000000000000000000000000000000000000000eee09900990990000099000009902ee099000009900bb00099000990099099009902eeee
+00000000000000000000000000000000000000000000000000000000eee09900990990000099000009902ee0990000099022b22099020990099099009902eeee
+00000000000000000000000000000000000000000000000000000000eee09900990999990099999009902ee099999009902eeee099020990099099999002eeee
+00000000000000000000000000000000000000000000000000000000eee09900990999990099999009902ee099999009902eeee099020990099099999022eeee
+00000000000000000000000000000000000000000000000000000000eee099009909900000990bb009902ee099000009902eeee09902099009909909902eeeee
+00000000000000000000000000000000000000000000000000000000eee0440044044000004402b20440000044000004400000e04402044004404404400eeeee
+00000000000000000000000000000000000000000000000000000000eee0444440044444404402ee04444440444444004444402044020044440044004402eeee
+00000000000000000000000000000000000000000000000000000000eee0444440044444404402ee04444440444444004444402044022044440044004402eeee
+00000000000000000000000000000000000000000000000000000000eee0000000000000000002ee0000000000000000000000200002e000000000000bb2eeee
+00000000000000000000000000000000000000000000000000000000eee2222222222222222222ee2222222222222222222222222222e2222222222222b2eeee
+00000000000000000000000000000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeebeeeee
+00000000000000000000000000000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+00000000000000000000000000000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+00000000000000000000000000000000eeeeeeeeeee444444455444eeeeeeeeeeeeeeeeeeee444444444444eeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeee444999999559499444eeeeeeeeeeeeee444999999555999444eeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeee4444994444155549944994eeeeeeeeee4444994444155555944994eeeee00000000000000000000000000000000
+00000000000000000000000000000000eeee4499944499415514949944444eeeeeee4499944499415514549944444eee00000000000000000000000000000000
+00000000000000000000000000000000eee449994499994111444994994944eeeee449994499994111444994994944ee00000000000000000000000000000000
+00000000000000000000000000000000eee4994449999444444499499499944eeee4994449999444444499499499944e00000000000000000000000000000000
+00000000000000000000000000000000ee49949999994499949944994009944eee49949999994499949944999499944e00000000000000000000000000000000
+00000000000000000000000000000000ee49490099994999499994990099944eee49499999994909490094999499944e00000000000000000000000000000000
+00000000000000000000000000000000e499499000949999499999000999494ee499499999900009490009999499494e00000000000000000000000000000000
+00000000000000000000000000000000e499499900009999499990009499494ee499499999000009490000999499494e00000000000000000000000000000000
+00000000000000000000000000000000e499499990000099499000009499494ee499499900000099499000009499494e00000000000000000000000000000000
+00000000000000000000000000000000e499499999000009490000099499494ee499490000000099499000000499494e00000000000000000000000000000000
+00000000000000000000000000000000e499499999400099499000499499494ee499490099499999499999000099494e00000000000000000000000000000000
+00000000000000000000000000000000e499499999499099499099499499494ee499499999499999499999499499494e00000000000000000000000000000000
+00000000000000000000000000000000e499499994999999499999499499494ee499499994999999499999499499494e00000000000000000000000000000000
+00000000000000000000000000000000e499499900999990499999499099494ee499499900999990499999499099494e00000000000000000000000000000000
+00000000000000000000000000000000e499499000099900499909490099494ee499499000099900499909490099494e00000000000000000000000000000000
+00000000000000000000000000000000e499499000009000099009000009494ee499499000009000099009000009494e00000000000000000000000000000000
+00000000000000000000000000000000e449490004000000009009000009494ee449490004000000009009000009494e00000000000000000000000000000000
+00000000000000000000000000000000ee4449009400009000000000900944eeee4449009400009000000000900944ee00000000000000000000000000000000
+00000000000000000000000000000000eee44909949000990009000994094eeeeee44909949000990009000994094eee00000000000000000000000000000000
+00000000000000000000000000000000eeee449994900999409990099494eeeeeeee449994900999409990099494eeee00000000000000000000000000000000
+00000000000000000000000000000000eeeee4499499999949999949944eeeeeeeeee4499499999949999949944eeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeee44444444444444444444eeeeeeeeeeee44444444444444444444eeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+00000000000000000000000000000000eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee00000000000000000000000000000000
+</script>
+
+<div class="page">
+
+<header class="hero">
+  <canvas class="screen" id="screen" width="128" height="64" aria-label="Title screen: Specter Deflector over a scrolling graveyard, with the ghost below"></canvas>
+  <h1>Specter Deflector Field Guide</h1>
+  <p>The creature horde is on the offensive in your graveyard. Can you defeat the seemingly endless waves of Jack's army?</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#controls">Controls</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#powers">Ghost powers</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#candy">Candy</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#enemies">Enemies</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#shots">Enemy shots</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#boss">Boss</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#floaters">Floaters</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#scoring">Scoring</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#waves">Waves</a>
+    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#tips">Tips</a>
+  </nav>
+</header>
+
+<section id="controls">
+  <span class="eyebrow">Section 1</span>
+  <h2>Controls</h2>
+  <p class="">PICO-8 maps <span class="key">Z</span> to 🅾️ and <span class="key">X</span> to ❎. Gamepads use the matching face buttons.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Input</th><th>Ghost</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><span class="key">←</span><span class="key">→</span><span class="key">↑</span><span class="key">↓</span></td>
+          <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="3" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="4" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="5" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+          <td>Move left, right, up, and down</td></tr>
+      <tr><td><span class="key">X</span> hold</td>
+          <td class="sprite"><span class="tile"><canvas class="spr" data-a="6" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+          <td>Fire a stream of ectoplasm bolts</td></tr>
+      <tr><td><span class="key">Z</span> hold</td>
+          <td class="sprite"><span class="tile"><canvas class="spr" data-a="31" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+          <td>Enter <strong>Ghost Mode</strong> while you have candy</td></tr>
+      <tr><td><span class="key">Z</span> + <span class="key">X</span></td>
+          <td class="sprite"><span class="tile"><canvas class="spr" data-a="8" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+          <td>Hold Z and tap X to set off an <strong>Ecto Bomb</strong>, consuming all your candy</td></tr>
+      
+    </tbody>
+  </table></div>
+</section>
+
+<section id="powers">
+  <span class="eyebrow">Section 2</span>
+  <h2>Ghost powers</h2>
+  <p>Shoot creatures, activate ghost mode, and unleash your ghostly powers!</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Power</th><th>Sprite</th><th>How</th><th>Cost</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="name">Bolt</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="6" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>Hold <span class="key">X</span></td>
+        <td><span class="pill good">Free</span></td>
+        <td>Ectoplasm bolts deal 1 damage per hit.</td>
+      </tr>
+      <tr>
+        <td class="name">Ghost Mode</td>
+        <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="30,31,32,33,34" data-s="0.08" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+        <td>Hold <span class="key">Z</span></td>
+        <td><span class="pill warn">3 candy / sec</span></td>
+        <td>Become unseen to enemies and move faster. Phase through walls, enemies, and projectiles!</td>
+      </tr>
+      <tr>
+        <td class="name">Ecto Bomb</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="8" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>Hold <span class="key">Z</span>, tap <span class="key">X</span></td>
+        <td><span class="pill bad">All candy</span></td>
+        <td>Consume all your candy to produce an Ecto Bomb, dealing 3 damage per hit and erasing enemy projectiles.</td>
+      </tr>
+      <tr>
+        <td class="name">Sugar Rush</td>
+        <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="52" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="53" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="54" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+        <td>Collect your 10th candy</td>
+        <td><span class="pill good">Automatic</span></td>
+        <td>Collect 10 candy to regain a lost life (<span class="float">ghoulish!</span>) or unleash a full-strength Ecto Bomb (<span class="float">unleashed!</span>if lives are already full.</td>
+      </tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="candy">
+  <span class="eyebrow">Section 3</span>
+  <h2>Candy, lives, and the HUD</h2>
+  <div class="hud">
+    <div><span class="tile"><canvas class="spr" data-a="7" data-z="5" width="8" height="8" style="width: 40px; height: 40px;" role="img"></canvas></span>
+      <p><strong>Lives</strong>, top left. Up to 4 at a time. A <em>poisoned</em> hit lowers your maximum, so only a Sugar Rush can refill you to the new cap.</p></div>
+    <div><span class="tile"><canvas class="spr" data-a="52,53,54" data-s="0.03" data-z="5" width="8" height="8" style="width: 40px; height: 40px;" role="img"></canvas></span>
+      <p><strong>Candy</strong>, top right, with the count beside it.</p></div>
+    <div><span class="tile"><canvas class="spr" data-a="2" data-z="5" data-blink="1" width="8" height="8" style="width: 40px; height: 40px;" role="img"></canvas></span>
+      <p><strong>Blinking ghost</strong>: you were just hit and are invulnerable for 2 seconds, and will respawn.</p></div>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Candy</th><th>Sprite</th><th>How you get it</th><th class="num">Drop chance</th></tr></thead>
+    <tbody>
+      <tr><td class="name">Lollipop, wrapped candy, chocolate bar</td>
+          <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="52" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="53" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="54" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+          <td>Dropped by a killed creatures, touch it to collect +1 candy.</td>
+          <td class="num">10% from a monster in formation<br><strong>20% from a diving monster</strong></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="enemies">
+  <span class="eyebrow">Section 4</span>
+  <h2>Creatures and their powers</h2>
+  <p>Creatures arrive in waves, and each creature has a unique attack. Avoid touching creatures and their projectiles, as doing so costs <span class="dmg">1 life.</span></p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Monster</th><th>Sprite</th><th>When hurt</th><th class="num">HP</th><th class="num">Points</th><th>In formation</th><th>Diving</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="name">Frank</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="26,26,27,27" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="28,28,29,29" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td class="num">3</td><td class="num pts">300</td>
+        <td>Throws his <strong>head</strong> along with farm equipment projecticles straight down.</td>
+        <td>A diving headless Frank will attack aimlessly, wandering down the screen. If the diving Frank has not yet thrown his head, he will move towards you. Be careful: If he gets below you, he will throw his head with deadly accuracy!</td>
+      </tr>
+      <tr>
+        <td class="name">Witch</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="22,23" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="24,25" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td class="num">2</td><td class="num pts">400</td>
+        <td>Throws a <strong>potion</strong> aimed at you: poison, control or trick (see Creature Projectiles).</td>
+        <td>Fastest diver. Plunges straight down while weaving side to side.</td>
+      </tr>
+      <tr>
+        <td class="name">Drac</td>
+        <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="13,14,15" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="19,20,21" data-s="0.5" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+        <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="16,17,18" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="37,38,39" data-s="0.5" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+        <td class="num">4</td><td class="num pts">500</td>
+        <td>Turns into a bat before diving.</td>
+        <td>Drac flies down the screen until in-line with the player, then <strong>dashes sideways</strong> toward you. Be careful: Don't sit still for too long!</td>
+      </tr>
+      <tr>
+        <td class="name">UFO</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="64,66,68,70,72,76,78,96" data-s="1" data-w="2" data-h="2" data-z="2" width="16" height="16" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="98,98,100,102,104,106,108,110,128" data-s="1" data-w="2" data-h="2" data-z="2" width="16" height="16" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td class="num">20</td><td class="num pts">700</td>
+        <td>Each time the horde fires, a UFO in formation has a 50% chance to fire a <strong>12-shot ring</strong> instead.</td>
+        <td>Sinks slowly, firing an <strong>8-shot ring</strong> every second, then speeds off the bottom of the screen.</td>
+      </tr>
+      <tr>
+        <td class="name">Jack</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="196" data-w="4" data-h="3" data-z="1" width="32" height="24" style="width: 32px; height: 24px;" role="img"></canvas></span></td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="200" data-w="4" data-h="3" data-z="1" width="32" height="24" style="width: 32px; height: 24px;" role="img"></canvas></span></td>
+        <td class="num">130</td><td class="num pts">10000</td>
+        <td colspan="2">The final boss! Cycles through four attack patterns. See <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#boss" style="color:var(--candy)">The Boss</a>.</td>
+      </tr>
+    </tbody>
+  </table></div>
+  <p class="muted">A diving creature that leaves the bottom or sides of the screen is gone for good, with no points. Killing a diving creature (<span class="float">busted!</span>) has an increased point value along with an increased candy drop chance.</p>
+</section>
+
+<section id="shots">
+  <span class="eyebrow">Section 5</span>
+  <h2>Creature Projectiles</h2>
+  <p>Use Ghost Mode to phase through creatures and their projectiles, or use an Ecto Bomb to destroy creature projectiles!</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Shot</th><th>Sprite</th><th>Fired by</th><th>Damage</th><th>Extra effect</th><th>Floater</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="name">Frank's head</td>
+        <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="46" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="51" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+        <td>Frank</td>
+        <td class="dmg">−2 lives</td>
+        <td>The most dangerous single hit in the game. After throwing it, Frank is headless!</td>
+        <td><span class="float">headshot!</span></td>
+      </tr>
+      <tr>
+        <td class="name">Farm Equipment</td>
+        <td class="sprite"><div class="tiles"><span class="tile"><canvas class="spr" data-a="55" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="56,57,58,59" data-s="0.5" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span><span class="tile"><canvas class="spr" data-a="60,61,62,63" data-s="0.5" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></div></td>
+        <td>Frank</td>
+        <td class="dmg">−1 life</td>
+        <td>None.</td>
+        <td class="muted">none</td>
+      </tr>
+      <tr>
+        <td class="name">Poison potion</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="40,41,42" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>Witch</td>
+        <td class="dmg">−1 life</td>
+        <td><strong>Lowers your maximum lives by 1</strong> for the rest of the game.</td>
+        <td><span class="float">poisoned</span></td>
+      </tr>
+      <tr>
+        <td class="name">Control potion</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="132,133,134" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>Witch</td>
+        <td class="dmg">−1 life</td>
+        <td>For 2 seconds the ghost drifts upward on its own and ignores <span class="key">↑</span><span class="key">↓</span>. You can still steer left and right. <strong>You get no invulnerability blink</strong>, so you can be hit again immediately.</td>
+        <td><span class="float">controlled!</span></td>
+      </tr>
+      <tr>
+        <td class="name">Trick potion</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="148,149,150" data-s="0.1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>Witch</td>
+        <td class="dmg">−1 life</td>
+        <td><strong>Steals all your candy.</strong></td>
+        <td><span class="float">tricked!</span></td>
+      </tr>
+      <tr>
+        <td class="name">Saucer pellet</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="43,44,45,44,43" data-s="1" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>UFO</td>
+        <td class="dmg">−1 life</td>
+        <td>None, but they come in rings, so look for the gaps.</td>
+        <td class="muted">none</td>
+      </tr>
+      <tr>
+        <td class="name">Lil' Jack</td>
+        <td class="sprite"><span class="tile"><canvas class="spr" data-a="9" data-z="4" width="8" height="8" style="width: 32px; height: 32px;" role="img"></canvas></span></td>
+        <td>Jack</td>
+        <td class="dmg">−1 life</td>
+        <td>None. Jack fires a lot of them.</td>
+        <td class="muted">none</td>
+      </tr>
+    </tbody>
+  </table></div>
+  
+</section>
+
+<section id="boss">
+  <span class="eyebrow">Section 6</span>
+  <h2>The boss: Jack</h2>
+  <div class="boss">
+    <span class="tile"><canvas class="spr" data-a="196" data-w="4" data-h="3" data-z="4" data-flash="1" width="32" height="24" style="width: 128px; height: 96px;" role="img"></canvas></span>
+    <div>
+      <p>Banish Jack to win!</p>
+      
+    </div>
+  </div>
+  
+</section>
+
+<section id="floaters">
+  <span class="eyebrow">Section 7</span>
+  <h2>Floater texts</h2>
+  
+  <div class="table-wrap"><table>
+    <thead><tr><th>Floater</th><th>When it appears</th><th>What it means for you</th></tr></thead>
+    <tbody>
+      <tr><td><span class="float">busted!</span></td><td>You destroy a creature mid-dive</td><td>Double candy chance from that kill; 50% chance another monster dives right away</td></tr>
+      <tr><td><span class="float">ghoulish!</span></td><td>10th candy while missing a life</td><td>+1 life, candy resets to 0</td></tr>
+      <tr><td><span class="float">unleashed!</span></td><td>10th candy with full lives</td><td>+5000 and a free Ecto Bomb, candy resets to 0</td></tr>
+      <tr><td><span class="float">banished!</span></td><td>Jack has been defeated</td><td>+10000, game won</td></tr>
+      <tr><td><span class="float">headshot!</span></td><td>Hit by Frank's head</td><td>−2 lives</td></tr>
+      <tr><td><span class="float">poisoned</span></td><td>Hit by a poison potion</td><td>−1 life and −1 maximum lives</td></tr>
+      <tr><td><span class="float">controlled!</span></td><td>Hit by a control potion</td><td>−1 life, forced upward for 2 sec, no invulnerability</td></tr>
+      <tr><td><span class="float">tricked!</span></td><td>Hit by a trick potion</td><td>−1 life, all candy lost</td></tr>
+      <tr><td><span class="float">no candy...</span></td><td>Pressing <span class="key">Z</span> (or Z+X) with an empty stash</td><td>Nothing happens. Go collect candy.</td></tr>
+    </tbody>
+  </table></div>
+  
+</section>
+
+<section id="scoring">
+  <span class="eyebrow">Section 8</span>
+  <h2>Scoring</h2>
+  <p class="muted">Every score on screen ends in "00", so a Frank kill shows as 300.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Action</th><th>Sprite</th><th class="num">Points</th></tr></thead>
+    <tbody>
+      <tr><td>Destroy a Frank</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="26" data-z="3" width="8" height="8" style="width: 24px; height: 24px;" role="img"></canvas></span></td><td class="num pts">300</td></tr>
+      <tr><td>Destroy a Witch</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="22" data-z="3" width="8" height="8" style="width: 24px; height: 24px;" role="img"></canvas></span></td><td class="num pts">400</td></tr>
+      <tr><td>Destroy a Drac</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="13" data-z="3" width="8" height="8" style="width: 24px; height: 24px;" role="img"></canvas></span></td><td class="num pts">500</td></tr>
+      <tr><td>Erase an enemy shot with an Ecto Bomb bolt</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="8" data-z="3" width="8" height="8" style="width: 24px; height: 24px;" role="img"></canvas></span></td><td class="num pts">500</td></tr>
+      <tr><td>Destroy a UFO</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="64" data-w="2" data-h="2" data-z="1.5" width="16" height="16" style="width: 24px; height: 24px;" role="img"></canvas></span></td><td class="num pts">700</td></tr>
+      <tr><td>Sugar Rush with full lives (<span class="float">unleashed!</span>)</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="53" data-z="3" width="8" height="8" style="width: 24px; height: 24px;" role="img"></canvas></span></td><td class="num pts">5000</td></tr>
+      <tr><td>Defeat Jack (<span class="float">banished!</span>)</td><td class="sprite"><span class="tile"><canvas class="spr" data-a="196" data-w="4" data-h="3" data-z="1" width="32" height="24" style="width: 32px; height: 24px;" role="img"></canvas></span></td><td class="num pts">10000</td></tr>
+    </tbody>
+  </table></div>
+  
+</section>
+
+
+
+
+
+
+</div>
+
+<script>
+(function () {
+  var PAL = ["#000000","#1d2b53","#7e2553","#008751","#ab5236","#5f574f","#c2c3c7","#fff1e8","#ff004d","#ffa300","#ffec27","#00e436","#29adff","#83769c","#ff77a8","#ffccaa"];
+  var rows = document.getElementById("gfx").textContent.trim().split(/\s+/);
+  var sheet = document.createElement("canvas");
+  sheet.width = 128; sheet.height = 128;
+  var sctx = sheet.getContext("2d");
+  var img = sctx.createImageData(128, 128);
+  for (var y = 0; y < 128; y++) {
+    for (var x = 0; x < 128; x++) {
+      var c = parseInt(rows[y][x], 16), i = (y * 128 + x) * 4;
+      if (c === 14) continue; // pink is transparent in this cart
+      var h = PAL[c];
+      img.data[i] = parseInt(h.substr(1, 2), 16);
+      img.data[i + 1] = parseInt(h.substr(3, 2), 16);
+      img.data[i + 2] = parseInt(h.substr(5, 2), 16);
+      img.data[i + 3] = 255;
+    }
+  }
+  sctx.putImageData(img, 0, 0);
+
+
+  function blit(ctx, src, n, dx, dy, w, h) {
+    ctx.drawImage(src, (n % 16) * 8, Math.floor(n / 16) * 8, w * 8, h * 8, dx, dy, w * 8, h * 8);
+  }
+
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var sprites = [];
+  document.querySelectorAll("canvas.spr").forEach(function (el) {
+    var w = +(el.dataset.w || 1), h = +(el.dataset.h || 1), z = +(el.dataset.z || 4);
+    el.width = w * 8; el.height = h * 8;
+    el.style.width = (w * 8 * z) + "px";
+    el.style.height = (h * 8 * z) + "px";
+    var s = { el: el, ctx: el.getContext("2d"), frames: el.dataset.a.split(",").map(Number), speed: +(el.dataset.s || 0), w: w, h: h, blink: !!el.dataset.blink, flash: !!el.dataset.flash, last: "" };
+    el.setAttribute("role", "img");
+    sprites.push(s);
+  });
+
+  function drawSprites(t) {
+    sprites.forEach(function (s) {
+      var n = s.frames[Math.floor(t * s.speed) % s.frames.length];
+      var hidden = s.blink && Math.sin(t / 5 * 2 * Math.PI) * -1 >= 0.1; // matches the cart's invulnerability blink
+      var flash = s.flash && (t % 90) < 10;
+      var key = n + "|" + hidden + "|" + flash;
+      if (key === s.last) return;
+      s.last = key;
+      s.ctx.clearRect(0, 0, s.el.width, s.el.height);
+      if (!hidden) blit(s.ctx, sheet, flash ? 200 : n, 0, 0, s.w, s.h);
+    });
+  }
+
+  // title screen: graveyard scrolls down at 1px per frame like the cart
+  var scr = document.getElementById("screen").getContext("2d");
+  var graves = [];
+  for (var g = 0; g < 18; g++) graves.push({ x: Math.floor(Math.random() * 8) * 16 + 4, y: Math.floor(Math.random() * 4) * 16, s: [10, 11, 12][g % 3] });
+  var bolts = [];
+  function drawScreen(t) {
+    scr.fillStyle = PAL[3];
+    scr.fillRect(0, 0, 128, 64);
+    graves.forEach(function (gr) {
+      if (!reduce) { gr.y += 0.5; if (gr.y > 64) gr.y -= 72; }
+      blit(scr, sheet, gr.s, gr.x, Math.floor(gr.y), 1, 1);
+    });
+    blit(scr, sheet, 135, 28, 2, 9, 4);
+    var gx = reduce ? 60 : Math.round(60 + Math.sin(t / 70) * 40);
+    var dir = reduce ? 0 : Math.cos(t / 70);
+    if (!reduce && t % 8 === 0) bolts.push({ x: gx + 2, y: 50 });
+    bolts = bolts.filter(function (b) { b.y -= 3; return b.y > 34; });
+    bolts.forEach(function (b) { blit(scr, sheet, 6, b.x, b.y, 1, 1); });
+    blit(scr, sheet, Math.abs(dir) < 0.3 ? 2 : (dir > 0 ? 3 : 1), gx, 52, 1, 1);
+  }
+
+  var t = 0, acc = 0, prev = performance.now();
+  function frame(now) {
+    acc += now - prev; prev = now;
+    var steps = 0;
+    while (acc >= 1000 / 30 && steps < 4) { t++; acc -= 1000 / 30; steps++; }
+    if (acc > 200) acc = 0;
+    drawSprites(t);
+    drawScreen(t);
+    if (!reduce) requestAnimationFrame(frame);
+  }
+  drawSprites(0);
+  drawScreen(0);
+  if (!reduce) requestAnimationFrame(frame);
+
+  // waves table from the cart's wave_data
+  var waves = [
+    "0111111110 0111111110 0111111110 0111111110",
+    "0222222220 0222222220 0222222220 0222222220",
+    "1122112211 1122222211 2222222222 2222222222",
+    "0333333330 0333333330 0333333330 0333333330",
+    "3301111033 3301111033 3301111033 3301111033",
+    "0122112210 3122112213 3122222213 0122222210",
+    "3131221313 1312112131 3131221313 1312112131",
+    "2220400222 2200000022 1101111011 1101111011",
+    "3301111033 4002222040 0002112000 1101111011",
+    "0011111100 3311111133 3322222233 3322222233",
+    "0000500000 0000000000 0000000000 0000000000"
+  ];
+  var pace = [60,20,60,20,60,20,50,15,50,15,50,15,40,10,40,10,30,10,30,10,60,20];
+  var kinds = { 1: [26, 1, 1, 2], 2: [22, 1, 1, 2], 3: [13, 1, 1, 2], 4: [64, 2, 2, 1], 5: [196, 4, 3, 0.5] };
+  var names = { 1: "Frank", 2: "Witch", 3: "Drac", 4: "UFO", 5: "Jack" };
+  var body = document.getElementById("wave-rows");
+  function sec(f) { return +(f / 30).toFixed(2) + "s"; }
+  waves.forEach(function (w, i) {
+    var counts = {}, total = 0;
+    w.replace(/ /g, "").split("").forEach(function (ch) { if (ch !== "0") { counts[ch] = (counts[ch] || 0) + 1; total++; } });
+    var tr = document.createElement("tr");
+    var horde = Object.keys(counts).sort().map(function (k) {
+      var kd = kinds[k];
+      return '<span class="tiles" style="display:inline-flex;margin-right:0.9rem"><span class="tile" style="padding:3px"><canvas class="spr" data-a="' + kd[0] + '" data-w="' + kd[1] + '" data-h="' + kd[2] + '" data-z="' + kd[3] + '"></canvas></span><span>' + counts[k] + "× " + names[k] + "</span></span>";
+    }).join("");
+    var boss = i === 10;
+    var dive = pace[i * 2], fire = pace[i * 2 + 1];
+    tr.innerHTML = '<td class="num name">' + (boss ? "Boss" : i + 1) + "</td><td>" + horde + '</td><td class="num">' + total + '</td><td class="num">' + (boss ? "—" : sec(dive)) + '</td><td class="num">' + (boss ? "own pattern" : sec(fire) + "–" + sec(fire * 2)) + "</td>";
+    body.appendChild(tr);
+  });
+  body.querySelectorAll("canvas.spr").forEach(function (el) {
+    var w = +el.dataset.w, h = +el.dataset.h, z = +el.dataset.z;
+    el.width = w * 8; el.height = h * 8;
+    el.style.width = (w * 8 * z) + "px"; el.style.height = (h * 8 * z) + "px";
+    el.setAttribute("role", "img");
+    blit(el.getContext("2d"), sheet, +el.dataset.a, 0, 0, w, h);
+  });
+})();
+</script>
+
+</body></html>
