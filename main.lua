@@ -1,3 +1,6 @@
+--Specter Deflector
+--By Stoker
+
 --default sprite fields - read through the metatable until overwritten
 sprmeta={__index={x=0,y=0,sx=0,sy=0,flash=0,shake=0,frame=1,width=1,height=1,w=8,h=8,fire_acc=0}}
 
@@ -584,14 +587,16 @@ function draw_start()
 	cls(3)
 	draw_graveyard()
 
-	print(version,1,1,8)
-	spr(peaker_spr, peakerx, 19+sin(time()/3)*4)
+	--print(version,1,1,8)
+	--spr(peaker_spr, peakerx, 19+sin(time()/3)*4)
+	spr(peaker_spr, peakerx, 39+sin(time()/3)*4)
 	if(sin(time()/3)>0.5) then
 		peaker_spr=rnd(peaker_spr_array)
 	end
-	spr(135, 27, 20, 9, 4)
+	--spr(135, 27, 20, 9, 4)
+	spr(135, 27, 40, 9, 4)
 	
-	if highscore>0 then
+	--[[if highscore>0 then
 		center_print("high score:",64,56,8)
 		center_print(make_score(highscore),64,64,8)
 	end
@@ -599,7 +604,7 @@ function draw_start()
 		center_print("high time:",64,72,8)
 		center_print(format_time(hightime),64,80,8)
 	end
-	print("press ❎ to start",30,96,blink())
+	print("press ❎ to start",30,96,blink())]]--
 end
 
 --draws game over / win screen - called when mode is "over" or "win"
