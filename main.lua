@@ -575,6 +575,9 @@ function draw_start()
 
 	print(version,1,1,8)
 	spr(peaker_spr, peakerx, 19+sin(time()/3)*4)
+	if(sin(time()/3)>0.5) then
+		peaker_spr=rnd(peaker_spr_array)
+	end
 	spr(135, 27, 20, 9, 4)
 	
 	if highscore>0 then
