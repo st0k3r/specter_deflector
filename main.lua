@@ -22,8 +22,12 @@ function _init()
 	hightime=dget(1)
 	mode="start"
 	t=0
+	version="v1.0"
 	shake=0
 	flash=0
+	peaker_spr_array={2,13,22,26}
+	peaker_spr=rnd(peaker_spr_array)
+	peakerx=80
 	music(8)
 	set_transparency()
 	randpos()
@@ -568,7 +572,11 @@ end
 function draw_start()
 	cls(3)
 	draw_graveyard()
+
+	print(version,1,1,8)
+	spr(peaker_spr, peakerx, 19+sin(time()/3)*4)
 	spr(135, 27, 20, 9, 4)
+	
 	if highscore>0 then
 		center_print("high score:",64,56,8)
 		center_print(make_score(highscore),64,64,8)
@@ -577,7 +585,7 @@ function draw_start()
 		center_print("high time:",64,72,8)
 		center_print(format_time(hightime),64,80,8)
 	end
-	center_print("press ❎ to start",64,96,blink())
+	print("press ❎ to start",30,96,blink())
 end
 
 --draws game over / win screen - called when mode is "over" or "win"
