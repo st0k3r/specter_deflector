@@ -587,16 +587,13 @@ function draw_start()
 	cls(3)
 	draw_graveyard()
 
-	--print(version,1,1,8)
-	--spr(peaker_spr, peakerx, 19+sin(time()/3)*4)
-	spr(peaker_spr, peakerx, 39+sin(time()/3)*4)
+	print(version,1,1,8)
+	spr(peaker_spr, peakerx, 19+sin(time()/3)*4)
 	if(sin(time()/3)>0.5) then
 		peaker_spr=rnd(peaker_spr_array)
 	end
-	--spr(135, 27, 20, 9, 4)
-	spr(135, 27, 40, 9, 4)
-	
-	--[[if highscore>0 then
+	spr(135, 27, 20, 9, 4)
+	if highscore>0 then
 		center_print("high score:",64,56,8)
 		center_print(make_score(highscore),64,64,8)
 	end
@@ -604,7 +601,7 @@ function draw_start()
 		center_print("high time:",64,72,8)
 		center_print(format_time(hightime),64,80,8)
 	end
-	print("press ❎ to start",30,96,blink())]]--
+	print("press ❎ to start",30,96,blink())
 end
 
 --draws game over / win screen - called when mode is "over" or "win"
@@ -659,7 +656,7 @@ end
 --called to start gameplay
 function start_game()
 	music(6)
-	wave=10
+	wave=0
 	timer_seconds=0
 	endless=false
 	level=0
@@ -667,7 +664,7 @@ function start_game()
 	next_wave()
 
 	ghost=makespr{spr=2,x=60,y=90}
-	controlled_timer,bullet_timer,muzzle,score,bombs,next_fire,invul=0,0,0,500,8,0,0
+	controlled_timer,bullet_timer,muzzle,score,bombs,next_fire,invul=0,0,0,0,0,0,0
 	max_lives=4
 	lives=4
 
