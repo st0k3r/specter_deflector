@@ -248,16 +248,14 @@ eeeaaaaa9999aebeeeeaaaaaa9999ebeee77777eee77777eee77777eeeeeeeeeeeeeeeeeeeeeeeee
   <h1>Specter Deflector Field Guide</h1>
   <p>The creature horde is on the offensive in your graveyard. Can you defeat the seemingly endless waves of Jack's army?</p>
   <nav class="toc" aria-label="Sections">
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#controls">Controls</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#powers">Ghost powers</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#candy">Candy</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#enemies">Enemies</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#shots">Enemy shots</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#boss">Boss</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#floaters">Floaters</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#scoring">Scoring</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#waves">Waves</a>
-    <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#tips">Tips</a>
+    <a href="#controls">Controls</a>
+    <a href="#powers">Ghost powers</a>
+    <a href="#candy">Candy</a>
+    <a href="#enemies">Enemies</a>
+    <a href="#shots">Enemy shots</a>
+    <a href="#boss">Boss</a>
+    <a href="#floaters">Floaters</a>
+    <a href="#scoring">Scoring</a>
   </nav>
 </header>
 
@@ -390,7 +388,7 @@ eeeaaaaa9999aebeeeeaaaaaa9999ebeee77777eee77777eee77777eeeeeeeeeeeeeeeeeeeeeeeee
         <td class="sprite"><span class="tile"><canvas class="spr" data-a="196" data-w="4" data-h="3" data-z="1" width="32" height="24" style="width: 32px; height: 24px;" role="img"></canvas></span></td>
         <td class="sprite"><span class="tile"><canvas class="spr" data-a="200" data-w="4" data-h="3" data-z="1" width="32" height="24" style="width: 32px; height: 24px;" role="img"></canvas></span></td>
         <td class="num">130</td><td class="num pts">10000</td>
-        <td colspan="2">The final boss! Cycles through four attack patterns. See <a href="file:///D:/Downloads/Specter%20Deflector%20Field%20Guide.html#boss" style="color:var(--candy)">The Boss</a>.</td>
+        <td colspan="2">The final boss! Cycles through four attack patterns. See <a href="#boss" style="color:var(--candy)">The Boss</a>.</td>
       </tr>
     </tbody>
   </table></div>
@@ -580,7 +578,6 @@ eeeaaaaa9999aebeeeeaaaaaa9999ebeee77777eee77777eee77777eeeeeeeeeeeeeeeeeeeeeeeee
   var scr = document.getElementById("screen").getContext("2d");
   var graves = [];
   for (var g = 0; g < 18; g++) graves.push({ x: Math.floor(Math.random() * 8) * 16 + 4, y: Math.floor(Math.random() * 4) * 16, s: [10, 11, 12][g % 3] });
-  var bolts = [];
   function drawScreen(t) {
     scr.fillStyle = PAL[3];
     scr.fillRect(0, 0, 128, 64);
@@ -591,9 +588,6 @@ eeeaaaaa9999aebeeeeaaaaaa9999ebeee77777eee77777eee77777eeeeeeeeeeeeeeeeeeeeeeeee
     blit(scr, sheet, 135, 28, 2, 9, 4);
     var gx = reduce ? 60 : Math.round(60 + Math.sin(t / 70) * 40);
     var dir = reduce ? 0 : Math.cos(t / 70);
-    if (!reduce && t % 8 === 0) bolts.push({ x: gx + 2, y: 50 });
-    bolts = bolts.filter(function (b) { b.y -= 3; return b.y > 34; });
-    bolts.forEach(function (b) { blit(scr, sheet, 6, b.x, b.y, 1, 1); });
     blit(scr, sheet, Math.abs(dir) < 0.3 ? 2 : (dir > 0 ? 3 : 1), gx, 52, 1, 1);
   }
 
